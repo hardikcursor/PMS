@@ -14,4 +14,10 @@ class Subscription extends Model
     {
         return $this->hasOne(License::class, 'user_id', 'id');
     }
+
+    public function subcreatedcompany()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
 }

@@ -35,6 +35,6 @@ class AddDeviceController extends Controller
         $posUser->android_id    = $request->AndroidId;
         $posUser->save();
 
-        return redirect()->route('superadmin.posusers.create')->with('success', 'POS Device added successfully.');
+        return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device added successfully.');
     }
 }

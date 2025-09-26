@@ -47,7 +47,7 @@
                                             <tr>
                                                 <td class="text-center">{{ ++$key }}</td>
                                                 <td>{{ $subscription->company->name }}</td>
-                                                <td>{{ $subscription->license->license_key ?? 'N/A' }}</td>
+                                                <td>{{ $subscription->name ?? 'N/A' }}</td>
                                                 <td class="text-end">₹{{ number_format($subscription->price, 2) }}</td>
                                                 <td class="text-end">{{ $subscription->duration }}</td>
                                                 <td class="text-center">

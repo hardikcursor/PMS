@@ -1,16 +1,17 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Footer;
 use App\Models\Header;
+use App\Models\Location;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class HeaderFooterController extends Controller
 {
-     public function getHeaderFooter(Request $request)
+    public function getHeaderFooter(Request $request)
     {
         $request->validate([
             'username' => 'required|string',
@@ -53,4 +54,111 @@ class HeaderFooterController extends Controller
             ],
         ]);
     }
+
+    public function getAddress(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
+
+        $lat = $request->lat;
+        $lng = $request->lng;
+
+        $address = null;
+
+        // 1️⃣ Try Google Maps API
+        $googleKey = env('GOOGLE_MAPS_API_KEY');
+        $googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$lat},{$lng}&key={$googleKey}&language=en&region=IN";
+
+        $response = Http::get($googleUrl);
+
+        if ($response->successful()) {
+            $data = $response->json();
+
+            if (! empty($data['results'][0]['formatted_address'])) {
+                $address = $data['results'][0]['formatted_address'];
+            }
+        }
+
+        // 2️⃣ Fallback to OpenStreetMap if Google fails
+        if (! $address) {
+            $osm = Http::get("https://nominatim.openstreetmap.org/reverse", [
+                'lat'    => $lat,
+                'lon'    => $lng,
+                'format' => 'json',
+            ])->json();
+
+            $address = $osm['display_name'] ?? "Address not found";
+        }
+
+        // 3️⃣ Save to database
+        $location = Location::create([
+            'lat'     => $lat,
+            'lng'     => $lng,
+            'address' => $address,
+        ]);
+
+        return response()->json([
+            'status'      => true,
+            'address'     => $address,
+            'location_id' => $location->id,
+        ]);
+    }
+
+    // public function getAddress(Request $request)
+    // {
+    //     $request->validate([
+    //         'lat' => 'required|numeric',
+    //         'lng' => 'required|numeric',
+    //     ]);
+
+    //     $lat     = $request->lat;
+    //     $lng     = $request->lng;
+    //     $address = null;
+
+    //     // 1️⃣ Try Google Maps API
+    //     $googleKey = env('GOOGLE_MAPS_API_KEY');
+    //     if ($googleKey) {
+    //         $googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$lat},{$lng}&key={$googleKey}&language=en&region=IN";
+    //         $response  = Http::get($googleUrl);
+    //         if ($response->successful()) {
+    //             $data = $response->json();
+    //             if (! empty($data['results'][0]['formatted_address'])) {
+    //                 $address = $data['results'][0]['formatted_address'];
+    //             }
+    //         }
+    //     }
+
+    //     // 2️⃣ Fallback to OpenStreetMap
+    //     if (! $address) {
+    //         $osm = Http::get("https://nominatim.openstreetmap.org/reverse", [
+    //             'lat'    => $lat,
+    //             'lon'    => $lng,
+    //             'format' => 'json',
+    //         ])->json();
+
+    //         $address = $osm['display_name'] ?? null;
+    //     }
+
+    //     // 3️⃣ If still no address, store approximate location
+    //     if (! $address) {
+    //         $address = "Lat: $lat, Lng: $lng (No address found)";
+    //     }
+
+    //     // 4️⃣ Save to database
+    //     $location = Location::create([
+    //         'lat'     => $lat,
+    //         'lng'     => $lng,
+    //         'address' => $address,
+    //     ]);
+
+    //     // 5️⃣ Return response
+    //     return response()->json([
+    //         'status'      => true,
+    //         'address'     => $address,
+    //         'location_id' => $location->id,
+    //     ]);
+    // }
 }

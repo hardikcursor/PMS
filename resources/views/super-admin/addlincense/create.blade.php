@@ -55,7 +55,7 @@
 
                                 <!-- Licence Name -->
                                 <div class="mb-3 row">
-                                    <label class="col-sm-3 col-form-label">Licence Name <span class="text-danger">*</span></label>
+                                    <label class="col-sm-3 col-form-label">Licence Key <span class="text-danger">*</span></label>
                                     <div class="col-sm-9">
                                         <input type="text" name="SubscriptionName" id="SubscriptionName"
                                             class="form-control @error('SubscriptionName') is-invalid @enderror"

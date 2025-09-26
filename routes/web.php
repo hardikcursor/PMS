@@ -44,9 +44,10 @@ Route::prefix('superadmin')->group(function () {
     });
 
     Route::prefix('posdevices')->group(function () {
-        Route::get('/manage', [AddDeviceController::class, 'index'])->name('superadmin.posdevices.index');
-        Route::get('/create', [AddDeviceController::class, 'create'])->name('superadmin.posdevices.create');
-        Route::post('/store', [AddDeviceController::class, 'store'])->name('superadmin.posdevices.store');
+        Route::get('/manage', [AddDeviceController::class, 'index'])->name('superadmin.adddevices.index');
+        Route::get('/create', [AddDeviceController::class, 'create'])->name('superadmin.adddevices.create');
+        Route::post('/store', [AddDeviceController::class, 'store'])->name('superadmin.adddevices.store');
+        
     });
     Route::prefix('faremetrix')->group(function () {
         Route::get('/', [farematrixController::class, 'index'])->name('superadmin.faremetrix.index');

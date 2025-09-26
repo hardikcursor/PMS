@@ -2,6 +2,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\License;
+use App\Models\PosMachine;
+use App\Models\Subscription;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +57,10 @@ class DashboardController extends Controller
 
         }
 
-        return view('super-admin.dashboard', compact('company', 'months', 'enabledCounts', 'disabledCounts'));
+        $license = Subscription::with('subcreatedcompany')->get();
+        $showdevice = PosMachine::with('company')->get();
+
+        return view('super-admin.dashboard', compact('company', 'months', 'enabledCounts', 'disabledCounts', 'license', 'showdevice'));
     }
 
 

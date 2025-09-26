@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -21,3 +22,4 @@ Route::get('/vehicles', [VehicleController::class, 'show']);
 Route::post('/fares', [FaremetrixController::class, 'getFareMatrix']);
 
 Route::get('/headersfooter', [HeaderFooterController::class, 'getHeaderFooter']);
+Route::get('/get-address', [HeaderFooterController::class, 'getAddress']);

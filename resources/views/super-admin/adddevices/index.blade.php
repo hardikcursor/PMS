@@ -13,7 +13,7 @@
 
                             <div class="page-title-right">
                                 <ol class="breadcrumb m-0">
-                                    <a href="{{ route('superadmin.posdevices.create') }}" class="btn btn-primary">Add
+                                    <a href="{{ route('superadmin.adddevices.create') }}" class="btn btn-primary">Add
                                         Device</a>
 
                             </div>

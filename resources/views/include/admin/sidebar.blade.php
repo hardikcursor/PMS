@@ -44,7 +44,7 @@
                          </ul>
                      </li>
                      <li>
-                         <a href="{{ route('superadmin.posdevices.index') }}" class="waves-effect">
+                         <a href="{{ route('superadmin.adddevices.index') }}" class="waves-effect">
                              <i class="bx bx-home-circle"></i>
                              <span key="t-dashboards">Add Devices</span>
                          </a>
