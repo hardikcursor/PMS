@@ -11,7 +11,7 @@
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                             <h4 class="mb-sm-0 font-size-18">Company Tables</h4>
 
-                      
+
 
                         </div>
                     </div>
@@ -72,10 +72,20 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <a href="#" class="btn btn-sm btn-primary">Edit</a>
-
-                                                    <a href="#" class="btn btn-sm btn-danger">Delete</a>
-
+                                                    <a href="{{ route('superadmin.company.edit', $company->id) }}"
+                                                        class="edit-row"><i class="fas fa-edit text-warning"></i></a>
+                                                    <form
+                                                        action="{{ route('superadmin.company.delete', $company->id) }}"
+                                                        method="POST" style="display:inline;"
+                                                        onsubmit="return confirm('Are you sure you want to delete this company?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-link p-0 m-0 delete-row text-danger ms-2"
+                                                            style="border: none; background: none;">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @empty
@@ -114,7 +124,7 @@
                 data: {
                     id: id,
                     val: val,
-                    _token: $('meta[name="csrf-token"]').attr('content') 
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) {
                     location.reload();

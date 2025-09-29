@@ -71,4 +71,34 @@ class User extends Authenticatable
         return $this->hasOne(Subscription::class, 'company_id', 'id');
     }
 
+    public function devices()
+    {
+        return $this->hasMany(PosMachine::class, 'company_id');
+    }
+
+    public function posusers()
+    {
+        return $this->hasMany(PosUser::class, 'company_id');
+    }
+
+    public function header()
+    {
+        return $this->hasOne(Header::class, 'user_id', 'id');
+    }
+
+    public function footer()
+    {
+        return $this->hasOne(Footer::class, 'user_id', 'id');
+    }
+
+    public function gstInfo()
+    {
+        return $this->hasOne(GST_INFO::class, 'user_id', 'id');
+    }
+
+    public function accountInfo()
+    {
+        return $this->hasOne(Account_info::class, 'user_id', 'id');
+    }
+
 }

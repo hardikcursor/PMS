@@ -27,10 +27,11 @@
 
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title mb-4">Create POS Device</h4>
+                                <h4 class="card-title mb-4">Update POS Device</h4>
 
-                                <form method="POST" action="{{ route('superadmin.adddevices.store') }}">
+                                <form method="POST" action="{{ route('superadmin.adddevices.update', $postmachine->id) }}">
                                     @csrf
+                                    @method('PUT')
                                     <div class="row mb-4">
                                         <label for="horizontal-firstname-input"
                                             class="col-sm-3 col-form-label">Company</label>
@@ -39,7 +40,7 @@
                                                 name="Cname">
                                                 <option value="" disabled selected>Select Company</option>
                                                 @foreach ($company as $comp)
-                                                    <option value="{{ $comp->id }}">{{ $comp->name }}</option>
+                                                    <option value="{{ $comp->id }}" {{ $comp->id == $postmachine->company_id ? 'selected' : '' }}>{{ $comp->name }}</option>
                                                 @endforeach
                                             </select>
 
@@ -54,7 +55,7 @@
                                         <div class="col-sm-9">
                                             <input type="number"
                                                 class="form-control @error('Srnumber') is-invalid @enderror" id="Srnumber"
-                                                name="Srnumber" placeholder="Enter device serial number">
+                                                name="Srnumber" value="{{ $postmachine->serial_number }}" placeholder="Enter device serial number">
                                             <span class="text-danger">
                                                 @error('Srnumber')
                                                     <small class="text-danger">{{ $message }}</small>
@@ -68,7 +69,7 @@
                                         <div class="col-sm-9">
                                             <input type="text"
                                                 class="form-control @error('AndroidId') is-invalid @enderror" id="AndroidId"
-                                                name="AndroidId" placeholder="Enter Android ID (optional)">
+                                                name="AndroidId" value="{{ $postmachine->android_id }}" placeholder="Enter Android ID (optional)">
                                             <span class="text-danger">
                                                 @error('AndroidId')
                                                     <small class="text-danger">{{ $message }}</small>
@@ -79,9 +80,6 @@
 
                                     <div class="row justify-content-end">
                                         <div class="col-sm-9">
-
-
-
                                             <div>
                                                 <button type="submit" class="btn btn-primary w-md">Submit</button>
                                             </div>

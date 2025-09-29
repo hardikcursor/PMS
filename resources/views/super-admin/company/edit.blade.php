@@ -16,11 +16,12 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title mb-4">Company Details</h4>
+                                <h4 class="card-title mb-4">Update Company Details</h4>
 
-                                <form id="companyForm" method="POST" action="{{ route('superadmin.company.store') }}"
+                                <form id="companyForm" method="POST" action="{{ route('superadmin.company.update', $company->id) }}"
                                     enctype="multipart/form-data">
                                     @csrf
+                                    @method('PUT')
                                     <div id="basic-example">
                                         <!-- Company Details -->
                                         <h3>Company Details</h3>
@@ -30,7 +31,7 @@
                                                     <div class="mb-3">
                                                         <label>Agency Name <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="agency_name"
-                                                            placeholder="Enter Agency Name">
+                                                            placeholder="Enter Agency Name" value="{{ old('agency_name', $company->name) }}">
                                                         @error('agency_name')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -40,7 +41,7 @@
                                                     <div class="mb-3">
                                                         <label>Phone No <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="phone_no"
-                                                            placeholder="Enter Your Phone No.">
+                                                            placeholder="Enter Your Phone No." value="{{ old('phone_no', $company->phone_no) }}">
                                                         @error('phone_no')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -51,20 +52,10 @@
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        <label>Email (User ID) <span class="text-danger">*</span></label>
+                                                        <label>Email <span class="text-danger">*</span></label>
                                                         <input type="email" class="form-control" name="email"
-                                                            placeholder="Enter Your Email ID">
+                                                            placeholder="Enter Your Email ID" value="{{ old('email', $company->email) }}">
                                                         @error('email')
-                                                            <small class="text-danger">{{ $message }}</small>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label>Password (User Password) <span class="text-danger">*</span></label>
-                                                        <input type="password" class="form-control" name="password"
-                                                            placeholder="Enter Your Password">
-                                                        @error('password')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
                                                     </div>
@@ -76,7 +67,7 @@
                                                     <div class="mb-3">
                                                         <label>Fax No</label>
                                                         <input type="text" class="form-control" name="fax"
-                                                            placeholder="Enter Your Fax No">
+                                                            placeholder="Enter Your Fax No" value="{{ old('fax', $company->fax) }}">
                                                         @error('fax')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -85,7 +76,12 @@
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
                                                         <label>Company Logo</label>
-                                                        <input type="file" class="form-control" name="logo">
+                                                        <input type="file" class="form-control" name="logo" accept="image/*">
+                                                        @if ($company->image)
+                                                            <img src="{{ asset('admin/uploads/company/' . $company->image) }}"
+                                                                alt="Company Logo" width="100" height="100"
+                                                                class="mt-2">
+                                                        @endif
                                                         @error('logo')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -97,7 +93,7 @@
                                                 <div class="col-lg-12">
                                                     <div class="mb-3">
                                                         <label>Address <span class="text-danger">*</span></label>
-                                                        <textarea class="form-control" name="address" rows="2" placeholder="Enter Your Address">{{ old('address') }}</textarea>
+                                                        <textarea class="form-control" name="address" rows="2" placeholder="Enter Your Address">{{ old('address', $company->address) }}</textarea>
                                                         @error('address')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -114,8 +110,8 @@
                                                     <div class="mb-3">
                                                         <label>License Key</label>
                                                         <input type="text" class="form-control" name="license_key"
-                                                            id="licenseKeyInput" placeholder="Click License Key" readonly
-                                                            onclick="generateLicense()" />
+                                                            id="licenseKeyInput" value="{{ old('license_key',  optional($company->license)->license_key ) }}" placeholder="Click License Key" readonly
+                                                           />
                                                         @error('license_key')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -126,7 +122,7 @@
                                                         <label>License Validity</label>
                                                         <input type="date" class="form-control" name="license_validity"
                                                             min="{{ \Carbon\Carbon::today()->toDateString() }}"
-                                                            value="{{ old('license_validity') }}">
+                                                            value="{{ old('license_validity', optional($company->license)->license_validity) }}">
                                                         @error('license_validity')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -139,7 +135,7 @@
                                                     <div class="mb-3">
                                                         <label>Android App Ver</label>
                                                         <input type="text" class="form-control" name="android_version"
-                                                            value="{{ old('android_version') }}">
+                                                            value="{{ old('android_version', $company->android_version) }}">
                                                         @error('android_version')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -149,7 +145,7 @@
                                                     <div class="mb-3">
                                                         <label>GST No.</label>
                                                         <input type="text" class="form-control" name="gst_no"
-                                                            value="{{ old('gst_no') }}">
+                                                            value="{{ old('gst_no', optional($company->gstInfo)->gst_number) }}">
                                                         @error('gst_no')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -164,7 +160,7 @@
                                                         <input type="number" step="0.01"
                                                             class="form-control @error('c_gst') is-invalid @enderror"
                                                             name="c_gst" placeholder="C_GST (%)"
-                                                            value="{{ old('c_gst') }}">
+                                                            value="{{ old('c_gst', optional($company->gstInfo)->c_gst) }}">
                                                         <span class="text-danger">
                                                             @error('c_gst')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -179,7 +175,7 @@
                                                         <input type="number" step="0.01"
                                                             class="form-control @error('s_gst') is-invalid @enderror"
                                                             name="s_gst" placeholder="S_GST (%)"
-                                                            value="{{ old('s_gst') }}">
+                                                            value="{{ old('s_gst', optional($company->gstInfo)->s_gst) }}">
                                                         <span class="text-danger">
                                                             @error('s_gst')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -196,7 +192,7 @@
                                                         <input type="text"
                                                             class="form-control @error('cin_no') is-invalid @enderror"
                                                             name="cin_no" placeholder="Enter CIN No"
-                                                            value="{{ old('cin_no') }}">
+                                                            value="{{ old('cin_no', optional($company->accountInfo)->cin_number) }}">
                                                         <span class="text-danger">
                                                             @error('cin_no')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -211,7 +207,7 @@
                                                         <input type="text"
                                                             class="form-control @error('pan_no') is-invalid @enderror"
                                                             name="pan_no" placeholder="Enter PAN No"
-                                                            value="{{ old('pan_no') }}">
+                                                            value="{{ old('pan_no', optional($company->accountInfo)->pan_number) }}">
                                                         <span class="text-danger">
                                                             @error('pan_no')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -229,7 +225,7 @@
                                                     <div class="mb-3">
                                                         <label>Header 1</label>
                                                         <input type="text" class="form-control" name="header1"
-                                                            value="{{ old('header1') }}" maxlength="15">
+                                                            value="{{ old('header1', optional($company->header)->header1) }}" maxlength="15">
                                                         @error('header1')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -239,7 +235,7 @@
                                                     <div class="mb-3">
                                                         <label>Header 2</label>
                                                         <input type="text" class="form-control" name="header2"
-                                                            value="{{ old('header2') }}" maxlength="15">
+                                                            value="{{ old('header2', optional($company->header)->header2) }}" maxlength="15">
                                                         @error('header2')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -253,7 +249,7 @@
                                                         <input type="text"
                                                             class="form-control @error('header3') is-invalid @enderror"
                                                             name="header3" placeholder="Header 3"
-                                                            value="{{ old('header3') }}" maxlength="15">
+                                                            value="{{ old('header3', optional($company->header)->header3) }}" maxlength="15">
                                                         <span class="text-danger">
                                                             @error('header3')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -268,7 +264,7 @@
                                                         <input type="text"
                                                             class="form-control @error('header4') is-invalid @enderror"
                                                             name="header4" placeholder="Header 4"
-                                                            value="{{ old('header4') }}" maxlength="15">
+                                                            value="{{ old('header4', optional($company->header)->header4) }}" maxlength="15">
                                                         <span class="text-danger">
                                                             @error('header4')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -282,7 +278,7 @@
                                                     <div class="mb-3">
                                                         <label>Footer 1</label>
                                                         <input type="text" class="form-control" name="footer1"
-                                                            value="{{ old('footer1') }}" maxlength="15">
+                                                            value="{{ old('footer1', optional($company->footer)->footer1) }}" maxlength="15">
                                                         @error('footer1')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -292,7 +288,7 @@
                                                     <div class="mb-3">
                                                         <label>Footer 2</label>
                                                         <input type="text" class="form-control" name="footer2"
-                                                            value="{{ old('footer2') }}" maxlength="15">
+                                                            value="{{ old('footer2', optional($company->footer)->footer2) }}" maxlength="15">
                                                         @error('footer2')
                                                             <small class="text-danger">{{ $message }}</small>
                                                         @enderror
@@ -306,7 +302,7 @@
                                                         <input type="text"
                                                             class="form-control @error('footer3') is-invalid @enderror"
                                                             name="footer3" placeholder="Footer 3"
-                                                            value="{{ old('footer3') }}" maxlength="15">
+                                                            value="{{ old('footer3', optional($company->footer)->footer3) }}" maxlength="15">
                                                         <span class="text-danger">
                                                             @error('footer3')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -321,7 +317,7 @@
                                                         <input type="text"
                                                             class="form-control @error('footer4') is-invalid @enderror"
                                                             name="footer4" placeholder="Footer 4"
-                                                            value="{{ old('footer4') }}" maxlength="15">
+                                                            value="{{ old('footer4', optional($company->footer)->footer4) }}" maxlength="15">
                                                         <span class="text-danger">
                                                             @error('footer4')
                                                                 <small class="text-danger">{{ $message }}</small>
@@ -421,3 +417,5 @@
         </script>
     @endsection
 @endsection
+@section('styles')
+    <link href="{{ asset('admin_assets/libs/jquery-steps/build/jquery.steps.css') }}" rel="stylesheet" type="text/css" />

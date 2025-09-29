@@ -44,28 +44,14 @@
                                             <img src="{{ asset('admin_assets/images/users/avatar-1.jpg') }}" alt=""
                                                 class="img-thumbnail rounded-circle">
                                         </div>
-                                        <h5 class="font-size-15 text-truncate">Henry Price</h5>
-                                        <p class="text-muted mb-0 text-truncate">UI/UX Designer</p>
+
                                     </div>
 
                                     <div class="col-sm-8">
                                         <div class="pt-4">
 
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <h5 class="font-size-15">125</h5>
-                                                    <p class="text-muted mb-0">Projects</p>
-                                                </div>
-                                                <div class="col-6">
-                                                    <h5 class="font-size-15">$1245</h5>
-                                                    <p class="text-muted mb-0">Revenue</p>
-                                                </div>
-                                            </div>
-                                            <div class="mt-4">
-                                                <a href="javascript: void(0);"
-                                                    class="btn btn-primary waves-effect waves-light btn-sm">View Profile <i
-                                                        class="mdi mdi-arrow-right ms-1"></i></a>
-                                            </div>
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -85,16 +71,6 @@
                                                 2,
                                             ) }}
                                         </h3>
-
-
-                                        <p class="text-muted"><span class="text-success me-2"> 12% <i
-                                                    class="mdi mdi-arrow-up"></i> </span> From previous period</p>
-
-                                        <div class="mt-4">
-                                            <a href="javascript: void(0);"
-                                                class="btn btn-primary waves-effect waves-light btn-sm">View More <i
-                                                    class="mdi mdi-arrow-right ms-1"></i></a>
-                                        </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="mt-4 mt-sm-0">
@@ -103,7 +79,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p class="text-muted mb-0">We craft digital, graphic and dimensional thinking.</p>
+
                             </div>
                         </div>
                     </div>
@@ -191,24 +167,7 @@
                                         height: 350,
                                         stacked: true,
                                         toolbar: {
-                                            show: false,
-                                            tools: {
-                                                download: true,
-                                                selection: false,
-                                                zoom: false,
-                                                zoomin: false,
-                                                zoomout: false,
-                                                pan: false,
-                                                reset: false
-                                            },
-                                            export: {
-                                                csv: {
-                                                    filename: "company_statistics",
-                                                    columnDelimiter: ',',
-                                                    headerCategory: 'Month',
-                                                    headerValue: 'Count'
-                                                }
-                                            }
+                                            show: false
                                         }
                                     },
                                     series: [{
@@ -218,12 +177,16 @@
                                         {
                                             name: "Disabled Companies",
                                             data: @json($disabledCounts)
+                                        },
+                                        {
+                                            name: "POS Machines",
+                                            data: @json($posMachineCounts) // new series
                                         }
                                     ],
                                     xaxis: {
                                         categories: @json($months)
                                     },
-                                    colors: ["#34c38f", "#f46a6a"],
+                                    colors: ["#34c38f", "#f46a6a", "#556ee6"], // POS Machines color: blue
                                     dataLabels: {
                                         enabled: true
                                     },
@@ -236,6 +199,7 @@
                                 chart.render();
                             });
                         </script>
+
 
 
 
@@ -262,34 +226,28 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($license as $item)
-                                            <tr>
-                                                <td>
-                                                    {{ $item->company->name ?? 'N/A' }}
-                                                </td>
-                                                <td>{{ $item->created_at }}</td>
-                                                <td>{{ $item->price }}</td>
-                                             
-                                            
-                                                <td>
-                                                    <span
-                                                        class="badge badge-pill badge-soft-success font-size-11">Paid</span>
-                                                </td>
-                                                <td>
-                                                    <i class="fab fa-cc-mastercard me-1"></i> case
-                                                </td>
-                                                <td>
-                                                    <!-- Button trigger modal -->
-                                                    <button type="button"
-                                                        class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-                                                        data-bs-toggle="modal" data-bs-target=".transaction-detailModal">
-                                                        View Details
-                                                    </button>
-                                                </td>
-                                            </tr>
-
+                                            @foreach ($license as $item)
+                                                <tr>
+                                                    <td>{{ $item->company->name ?? 'N/A' }}</td>
+                                                    <td>{{ $item->created_at }}</td>
+                                                    <td>{{ $item->price }}</td>
+                                                    <td><span
+                                                            class="badge badge-pill badge-soft-success font-size-11">Paid</span>
+                                                    </td>
+                                                    <td><i class="fab fa-cc-mastercard me-1"></i> Cash</td>
+                                                    <td>
+                                                        <button type="button"
+                                                            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#transaction-detailModal-{{ $item->id }}">
+                                                            View Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
                                             @endforeach
                                         </tbody>
+
+
                                     </table>
                                 </div>
                                 <!-- end table-responsive -->
@@ -304,68 +262,62 @@
         <!-- End Page-content -->
 
         <!-- Transaction Modal -->
-        <div class="modal fade transaction-detailModal" tabindex="-1" role="dialog"
-            aria-labelledby="transaction-detailModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="transaction-detailModalLabel">Device Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                    
-                        <div class="table-responsive">
-                            <table class="table align-middle table-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Product</th>
-                                        <th scope="col">Serial No</th>
-                                        <th scope="col">Android id</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">
-                                            <div>
-                                                <img src="{{ asset('adminassets/images/product/img-7.png') }}"
-                                                    alt="" class="avatar-sm">
-                                            </div>
-                                        </th>
-                                        <td>
-                                            <div>
-                                                <h5 class="text-truncate font-size-14">Wireless Headphone (Black)</h5>
-                                                <p class="text-muted mb-0">$ 225 x 1</p>
-                                            </div>
-                                        </td>
-                                        <td>$ 255</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">
-                                            <div>
-                                                <img src="assets/images/product/img-4.png" alt=""
-                                                    class="avatar-sm">
-                                            </div>
-                                        </th>
-                                        <td>
-                                            <div>
-                                                <h5 class="text-truncate font-size-14">Phone patterned cases</h5>
-                                                <p class="text-muted mb-0">$ 145 x 1</p>
-                                            </div>
-                                        </td>
-                                        <td>$ 145</td>
-                                    </tr>
-                         
-                          
-                                </tbody>
-                            </table>
+        @foreach ($license as $item)
+            <div class="modal fade" id="transaction-detailModal-{{ $item->id }}" tabindex="-1"
+                aria-labelledby="transactionDetailLabel{{ $item->id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="transactionDetailLabel{{ $item->id }}">
+                                Device Details
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                style="filter: invert(1);"></button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table align-middle table-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Pos Serial No</th>
+                                            <th>Android ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($item->company->devices as $device)
+                                            <tr>
+                                                <td>{{ $device->created_at->format('d M, Y') }}</td>
+                                                <td>{{ $device->serial_number ?? 'N/A' }}</td>
+                                                <td>{{ $device->android_id ?? 'N/A' }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center">No devices found</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
-        </div>
+        @endforeach
+
+
         <!-- end modal -->
 
 

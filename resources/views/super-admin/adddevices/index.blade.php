@@ -21,13 +21,15 @@
                     </div>
                 </div>
                 <!-- end page title -->
-
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
 
-
+                                <h4 class="card-title mb-4">POS Devices List</h4>
 
                                 <table id="datatable" class="table table-bordered dt-responsive  nowrap w-100">
                                     <thead>
@@ -49,8 +51,21 @@
                                                 <td>{{ $machine->serial_number }}</td>
                                                 <td>{{ $machine->android_id ? $machine->android_id : 'N/A' }}</td>
                                                 <td class="text-center">
-                                                    <a href="#" class="btn btn-sm btn-primary">View</a>
-                                                    <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                                    <a href="{{ route('superadmin.adddevices.edit', $machine->id) }}"
+                                                        class="edit-row"><i class="fas fa-edit text-warning"></i></a>
+                                                    <form
+                                                        action="{{ route('superadmin.adddevices.destroy', $machine->id) }}"
+                                                        method="POST" style="display:inline;"
+                                                        onsubmit="return confirm('Are you sure you want to delete this device?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-link p-0 m-0 delete-row text-danger ms-2"
+                                                            style="border: none; background: none;">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+
                                                 </td>
                                             </tr>
                                         @empty

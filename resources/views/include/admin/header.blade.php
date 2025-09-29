@@ -14,10 +14,11 @@
 
                    <a href="index-2.html" class="logo logo-light">
                        <span class="logo-sm">
-                           <img src="{{ asset('admin_assets/images/logo-light.svg') }}" alt="" height="22">
+                           {{-- <img src="{{ asset('admin_assets/images/logo-light.svg') }}" alt="" height="22"> --}}
                        </span>
-                       <span class="logo-lg">
-                           <img src="{{ asset('admin_assets/images/logo-light.png') }}" alt="" height="19">
+                       <span class="logo-lg" style="display: flex; align-items: center; width: 250px;">
+                           {{-- <img src="{{ asset('admin_assets/images/logo-light.png') }}" alt="" height="19"> --}}
+                           <img src="{{ asset('admin_assets/images/Cursor_LOGO.png') }}" alt="" height="19">
 
                        </span>
 

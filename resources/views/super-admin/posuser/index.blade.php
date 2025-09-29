@@ -22,13 +22,19 @@
                     </div>
                 </div>
                 <!-- end page title -->
-
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                    
+                @elseif (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                    
+                @endif
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
 
-
+                                <h4 class="card-title mb-4">POS Users List</h4>
 
                                 <table id="datatable" class="table table-bordered dt-responsive  nowrap w-100">
                                     <thead>
@@ -52,10 +58,20 @@
                                                 <td class="text-end">{{ $posUser->user_rights }}</td>
                                                 <td class="text-end">{{ $posUser->login_id }}</td>
                                                 <td class="text-center">
-                                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                        data-bs-target="#viewMachineUserModal">View</button>
-                                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                                        data-bs-target="#deleteConfirmModal">Delete</button>
+                                                  <a href="{{ route('superadmin.posuser.editposuser', $posUser->id) }}"
+                                                        class="edit-row"><i class="fas fa-edit text-warning"></i></a>
+                                                    <form
+                                                        action="{{ route('superadmin.posuser.deleteposuser', $posUser->id) }}"
+                                                        method="POST" style="display:inline;"
+                                                        onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-link p-0 m-0 delete-row text-danger ms-2"
+                                                            style="border: none; background: none;">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @empty

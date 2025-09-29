@@ -121,6 +121,77 @@ class CompanyController extends Controller
             ->with('success', 'Company created successfully');
     }
 
+    public function edit($id)
+    {
+        $company = User::with(['license', 'header', 'footer', 'gstInfo', 'accountInfo'])->findOrFail($id);
+
+        return view('super-admin.company.edit', compact('company'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'agency_name'      => 'required|string|max:255',
+            'address'          => 'required|string|max:255',
+            'phone_no'         => 'required|string|max:20',
+            'fax'              => 'nullable|string|max:20',
+            'email'            => 'required|email|unique:users,email,' . $id,
+            'password'         => 'nullable|string|min:6',
+            'logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
+            'license_key'      => 'nullable|string|max:255',
+            'license_validity' => 'required|date|after_or_equal:today',
+            'android_version'  => 'nullable|string|max:50',
+
+            'header1'          => 'nullable|string|max:15',
+            'header2'          => 'nullable|string|max:15',
+            'header3'          => 'nullable|string|max:15',
+            'header4'          => 'nullable|string|max:15',
+            'footer1'          => 'nullable|string|max:15',
+            'footer2'          => 'nullable|string|max:15',
+            'footer3'          => 'nullable|string|max:15',
+            'footer4'          => 'nullable|string|max:15',
+
+            'gst_no'           => 'nullable|string|max:50',
+            'c_gst'            => 'nullable|numeric|min:0',
+            's_gst'            => 'nullable|numeric|min:0',
+
+            'cin_no'           => 'nullable|string|max:50',
+            'pan_no'           => 'nullable|string|max:50',
+        ]);
+
+        $user           = User::findOrFail($id);
+        $user->name     = $request->agency_name;
+        $user->address  = $request->address;
+        $user->phone_no = $request->phone_no;
+        $user->fax_no   = $request->fax;
+        $user->email    = $request->email;
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('logo')) {
+            $image    = $request->file('logo');
+            $filename = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('admin/uploads/company/'), $filename);
+            $user->image = $filename;
+        }
+
+        $user->save();
+
+        return redirect()->route('superadmin.company.manage')
+            ->with('success', 'Company updated successfully');
+    }
+
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('superadmin.company.manage')
+            ->with('success', 'Company deleted successfully');
+    }
+
     public function changestatus(Request $request)
     {
         $user = User::find($request->id);

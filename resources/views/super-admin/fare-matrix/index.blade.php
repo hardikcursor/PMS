@@ -53,12 +53,11 @@
                                     </select>
                                 </form>
 
-
                                 <div class="table-responsive">
                                     <table class="table table-bordered text-center align-middle">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>Vehicle</th>
+                                                <th>Hours</th>
                                                 @if ($selectedCompany)
                                                     @foreach ($slots as $slot)
                                                         <th>{{ $slot->slot_hours }}</th>
@@ -74,15 +73,15 @@
                                                         @php
                                                             $vehicle = $vehicleRates->first()->vehicleCategory;
                                                         @endphp
-                                                        <tr>
-                                                            <td>{{ $vehicle->vehicle_type }}</td>
+                                                        <tr class="rate-row" data-vehicle-id="{{ $vehicle->id }}">
+                                                         <td class="text-start">{{ $vehicle->vehicle_type }}</td>
+
                                                             @foreach ($slots as $slot)
                                                                 @php
                                                                     $record = $vehicleRates
                                                                         ->where('slot_id', $slot->id)
                                                                         ->first();
                                                                     $rate = $record->rate ?? '';
-                                                                    // Remove ".00" if not needed
                                                                     if (is_numeric($rate)) {
                                                                         $rate = rtrim(
                                                                             rtrim(
@@ -96,40 +95,39 @@
                                                                 <td>
                                                                     <input type="text" value="{{ $rate }}"
                                                                         class="form-control form-control-sm text-center rate-input"
-                                                                        disabled />
+                                                                        data-slot-id="{{ $slot->id }}" disabled />
                                                                 </td>
                                                             @endforeach
                                                             <td>
-                                                                <a href=""><i class="fas fa-edit text-warning"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#editModal"></i></a>
-                                                                <i class="fas fa-trash-alt text-danger"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#deleteModal"></i>
+                                                                <a href="javascript:void(0)" class="edit-row"><i
+                                                                        class="fas fa-edit text-warning"></i></a>
+                                                                <a href="javascript:void(0)" class="save-row d-none"><i
+                                                                        class="fas fa-check text-success"></i></a>
+                                                                <a href="javascript:void(0)" class="cancel-row d-none"><i
+                                                                        class="fas fa-times text-danger"></i></a>
+                                                                <a href="javascript:void(0)"
+                                                                    class="delete-row text-danger ms-2"><i
+                                                                        class="fas fa-trash-alt"></i></a>
                                                             </td>
                                                         </tr>
                                                     @endforeach
                                                 @else
                                                     <tr>
                                                         <td colspan="{{ $slots->count() + 2 }}"
-                                                            class="text-center text-muted">
-                                                            No records found
-                                                        </td>
+                                                            class="text-center text-muted">No records found</td>
                                                     </tr>
                                                 @endif
                                             @else
                                                 <tr>
                                                     <td colspan="{{ $slots->count() + 2 }}" class="text-center text-muted">
-                                                        Please select a company
-                                                    </td>
+                                                        Please select a company</td>
                                                 </tr>
                                             @endif
                                         </tbody>
-
-
-
                                     </table>
                                 </div>
+
+
 
                             </div>
                         </div>
@@ -146,56 +144,154 @@
 
 
     <script>
-        document.getElementById('page-size-select').addEventListener('change', function() {
-            var selectedCompany = this.value;
-            var rows = document.querySelectorAll("#subscriptionsBody tr[data-company]");
-            var visibleCount = 0;
+        document.addEventListener('DOMContentLoaded', function() {
 
-            rows.forEach(function(row) {
-                row.style.display = "none";
+            function showAlert(message, type = 'success') {
+                const alertPlaceholder = document.getElementById('alert-placeholder');
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+                alertPlaceholder.append(wrapper);
+                setTimeout(() => {
+                    wrapper.remove();
+                }, 3000);
+            }
+
+            // Edit row
+            document.querySelectorAll('.edit-row').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    row.querySelectorAll('.rate-input').forEach(input => input.disabled = false);
+
+                    row.querySelector('.edit-row').classList.add('d-none');
+                    row.querySelector('.save-row').classList.remove('d-none');
+                    row.querySelector('.cancel-row').classList.remove('d-none');
+                    row.querySelector('.delete-row').classList.add('d-none'); 
+                });
             });
 
-            var noRecordRow = document.getElementById("no-record-row");
-            if (noRecordRow) {
-                noRecordRow.remove();
-            }
+            // Cancel row
+            document.querySelectorAll('.cancel-row').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    row.querySelectorAll('.rate-input').forEach(input => {
+                        input.value = input.defaultValue;
+                        input.disabled = true;
+                        input.classList.remove('is-invalid');
+                    });
 
-            if (selectedCompany === "") {
-                var tbody = document.getElementById("subscriptionsBody");
-                var colCount = document.querySelectorAll("#subscriptionsTable thead th").length;
-
-                var tr = document.createElement("tr");
-                tr.id = "no-record-row";
-                var td = document.createElement("td");
-                td.colSpan = colCount;
-                td.className = "text-center text-muted";
-                td.innerText = "Please select a company";
-                tr.appendChild(td);
-                tbody.appendChild(tr);
-                return;
-            }
-
-            rows.forEach(function(row) {
-                var companyId = row.getAttribute("data-company");
-                if (companyId === selectedCompany) {
-                    row.style.display = "";
-                    visibleCount++;
-                }
+                    row.querySelector('.edit-row').classList.remove('d-none');
+                    row.querySelector('.save-row').classList.add('d-none');
+                    row.querySelector('.cancel-row').classList.add('d-none');
+                    row.querySelector('.delete-row').classList.remove('d-none'); 
+                });
             });
 
-            if (visibleCount === 0) {
-                var tbody = document.getElementById("subscriptionsBody");
-                var colCount = document.querySelectorAll("#subscriptionsTable thead th").length;
+            // Save row
+            document.querySelectorAll('.save-row').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const vehicleId = row.dataset.vehicleId;
+                    const rates = [];
+                    let hasError = false;
 
-                var tr = document.createElement("tr");
-                tr.id = "no-record-row";
-                var td = document.createElement("td");
-                td.colSpan = colCount;
-                td.className = "text-center text-muted";
-                td.innerText = "No record found";
-                tr.appendChild(td);
-                tbody.appendChild(tr);
-            }
+                    row.querySelectorAll('.rate-input').forEach(input => {
+                        const value = input.value.trim();
+                        if (isNaN(value) || Number(value) < 0) {
+                            input.classList.add('is-invalid');
+                            hasError = true;
+                        } else {
+                            input.classList.remove('is-invalid');
+                            rates.push({
+                                slot_id: input.dataset.slotId,
+                                rate: value
+                            });
+                        }
+                    });
+
+                    if (hasError) {
+                        showAlert('Please enter valid numeric values', 'danger');
+                        return;
+                    }
+
+                    row.querySelectorAll('.rate-input').forEach(input => input.disabled = true);
+                    row.querySelector('.edit-row').classList.remove('d-none');
+                    row.querySelector('.save-row').classList.add('d-none');
+                    row.querySelector('.cancel-row').classList.add('d-none');
+                    row.querySelector('.delete-row').classList.remove(
+                    'd-none'); 
+
+                    // AJAX save
+                    fetch("{{ route('update.vehicle.rate') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                vehicle_id: vehicleId,
+                                rates: rates
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                showAlert('Rates updated successfully');
+                                row.querySelectorAll('.rate-input').forEach(input => input
+                                    .defaultValue = input.value);
+                            } else {
+                                showAlert('Error updating rates', 'danger');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            showAlert('AJAX request failed', 'danger');
+                        });
+                });
+            });
+
+            // Delete row
+            document.querySelectorAll('.delete-row').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const vehicleId = row.dataset.vehicleId;
+
+                    if (!confirm('Are you sure you want to delete this row?')) return;
+
+                    fetch("{{ route('delete.vehicle.rate') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                vehicle_id: vehicleId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                row.remove();
+                                showAlert('Row deleted successfully');
+                            } else {
+                                showAlert('Delete failed', 'danger');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            showAlert('AJAX delete failed', 'danger');
+                        });
+                });
+            });
+
         });
     </script>
+
+
+
+
+
 @endsection

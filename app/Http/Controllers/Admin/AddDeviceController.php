@@ -37,4 +37,37 @@ class AddDeviceController extends Controller
 
         return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device added successfully.');
     }
+
+    public function edit($id)
+    {
+        $postmachine = PosMachine::findOrFail($id);
+        $company     = User::role('company-admin')->get();
+        return view('super-admin.adddevices.edit', compact('postmachine', 'company'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'Cname'     => 'required|exists:users,id',
+            'Srnumber'  => 'required|numeric',
+            'AndroidId' => 'nullable|string|max:255',
+        ]);
+
+        // Find the existing POS user
+        $posUser = PosMachine::findOrFail($id);
+        $posUser->company_id    = $request->Cname;
+        $posUser->serial_number = $request->Srnumber;
+        $posUser->android_id    = $request->AndroidId;
+        $posUser->save();
+
+        return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $posUser = PosMachine::findOrFail($id);
+        $posUser->delete();
+
+        return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device deleted successfully.');
+    }
 }

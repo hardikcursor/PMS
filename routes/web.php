@@ -5,24 +5,17 @@ use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\farematrixController;
 use App\Http\Controllers\Admin\LincenseController;
+use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\PosUserController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
-
-
-
-
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
 
-
 Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'dologin'])->name('dologin');
-
-
-
 
 Route::prefix('superadmin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
@@ -30,6 +23,9 @@ Route::prefix('superadmin')->group(function () {
     Route::prefix('company')->group(function () {
         Route::get('/create', [CompanyController::class, 'create'])->name('superadmin.company.create');
         Route::post('/store', [CompanyController::class, 'store'])->name('superadmin.company.store');
+        Route::get('/edit/{id}', [CompanyController::class, 'edit'])->name('superadmin.company.edit');
+        Route::put('/update/{id}', [CompanyController::class, 'update'])->name('superadmin.company.update');
+        Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('superadmin.company.delete');
         Route::get('/manage', [CompanyController::class, 'managecompany'])->name('superadmin.company.manage');
         Route::get('/activate', [CompanyController::class, 'activate'])->name('superadmin.company.activate');
         Route::get('/inactive', [CompanyController::class, 'inactive'])->name('superadmin.company.inactive');
@@ -40,14 +36,18 @@ Route::prefix('superadmin')->group(function () {
         Route::get('/manage', [LincenseController::class, 'index'])->name('superadmin.subscription.manage');
         Route::get('/create', [LincenseController::class, 'create'])->name('superadmin.subscription.create');
         Route::post('/store', [LincenseController::class, 'store'])->name('superadmin.subscription.store');
-
+        Route::get('/edit/{id}', [LincenseController::class, 'edit'])->name('superadmin.subscription.edit');
+        Route::put('/update/{id}', [LincenseController::class, 'update'])->name('superadmin.subscription.update');
+        Route::delete('/delete/{id}', [LincenseController::class, 'destroy'])->name('superadmin.subscription.destroy');
     });
 
     Route::prefix('posdevices')->group(function () {
         Route::get('/manage', [AddDeviceController::class, 'index'])->name('superadmin.adddevices.index');
         Route::get('/create', [AddDeviceController::class, 'create'])->name('superadmin.adddevices.create');
         Route::post('/store', [AddDeviceController::class, 'store'])->name('superadmin.adddevices.store');
-        
+        Route::get('/edit/{id}', [AddDeviceController::class, 'edit'])->name('superadmin.adddevices.edit');
+        Route::put('/update/{id}', [AddDeviceController::class, 'update'])->name('superadmin.adddevices.update');
+        Route::delete('/delete/{id}', [AddDeviceController::class, 'destroy'])->name('superadmin.adddevices.destroy');
     });
     Route::prefix('faremetrix')->group(function () {
         Route::get('/', [farematrixController::class, 'index'])->name('superadmin.faremetrix.index');
@@ -56,14 +56,27 @@ Route::prefix('superadmin')->group(function () {
         Route::post('/add-vehicle', [farematrixController::class, 'addvehicle'])->name('superadmin.faremetrix.addvehicle');
         Route::post('/store-rate', [farematrixController::class, 'ratecreate'])->name('superadmin.faremetrix.ratecreate');
         Route::get('/add-slot', [farematrixController::class, 'addslot'])->name('superadmin.faremetrix.addslot');
-        Route::get('/edit/{id}',[farematrixController::class, 'edit'])->name('superadmin.faremetrix.edit');
+        Route::get('/edit/{id}', [farematrixController::class, 'edit'])->name('superadmin.faremetrix.edit');
         Route::post('/store-slot', [farematrixController::class, 'storeslot'])->name('superadmin.faremetrix.storeslot');
+        Route::post('/vehicle/rate/update', [farematrixController::class, 'updateRate'])->name('update.vehicle.rate');
+        Route::post('/vehicle/rate/delete', [farematrixController::class, 'deleteRate'])->name('delete.vehicle.rate');
     });
 
     Route::prefix('posuser')->group(function () {
         Route::get('/add-new', [PosUserController::class, 'index'])->name('superadmin.posuser.manageposuser');
         Route::get('/create', [PosUserController::class, 'create'])->name('superadmin.posuser.addnewposuser');
         Route::post('/store', [PosUserController::class, 'store'])->name('superadmin.posuser.store');
+        Route::get('/edit/{id}', [PosUserController::class, 'edit'])->name('superadmin.posuser.editposuser');
+        Route::put('/update/{id}', [PosUserController::class, 'update'])->name('superadmin.posuser.updateposuser');
+        Route::delete('/delete/{id}', [PosUserController::class, 'destroy'])->name('superadmin.posuser.deleteposuser');
+    });
+
+    Route::prefix('location')->group(function () {
+        // Show locations table
+        Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
+
+// Show single location on OSM map
+        Route::get('/locations/{location}', [LocationController::class, 'showOSM'])->name('locations.showOSM');
     });
 
 });

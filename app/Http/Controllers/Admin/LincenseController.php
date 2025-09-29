@@ -40,4 +40,39 @@ class LincenseController extends Controller
 
         return redirect()->route('superadmin.subscription.manage')->with('success', 'Licence added successfully');
     }
+
+    public function edit($id)
+    {
+        $subscription = Subscription::findOrFail($id);
+        $companies   = User::role('company-admin')->get();
+        return view('super-admin.addlincense.edit', compact('subscription', 'companies'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'Company'          => 'required|exists:users,id',
+            'SubscriptionName' => 'required|string|max:255',
+            'Price'            => 'required|numeric|min:1',
+            'license_validity' => 'required|date',
+        ]);
+
+        $subscription             = Subscription::findOrFail($id);
+        $subscription->company_id = $request->Company;
+        $subscription->name       = $request->SubscriptionName;
+        $subscription->price      = $request->Price;
+        $subscription->duration   = $request->license_validity;
+        $subscription->save();
+
+        return redirect()->route('superadmin.subscription.manage')->with('success', 'Licence updated successfully');
+    }
+
+
+    public function destroy($id)
+    {
+        $subscription = Subscription::findOrFail($id);
+        $subscription->delete();
+
+        return redirect()->route('superadmin.subscription.manage')->with('success', 'Licence deleted successfully');
+    }
 }

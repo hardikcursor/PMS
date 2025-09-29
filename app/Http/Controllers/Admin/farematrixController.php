@@ -84,7 +84,7 @@ class farematrixController extends Controller
                     ->exists();
 
                 if ($exists) {
-                    return redirect()->back()->with('error', "Data already exists for this company, vehicle and slot.");
+                    return redirect()->route('superadmin.faremetrix.index')->back()->with('error', "Data already exists for this company, vehicle and slot.");
                 }
 
                 Fare_metrix::create([
@@ -97,5 +97,35 @@ class farematrixController extends Controller
         }
 
         return redirect()->back()->with('success', 'Fare metrix created successfully.');
+    }
+
+    public function updateRate(Request $request)
+    {
+        $data = $request->validate([
+            'vehicle_id'      => 'required|integer',
+            'rates'           => 'required|array',
+            'rates.*.slot_id' => 'required|integer',
+            'rates.*.rate'    => 'required|numeric|min:0',
+        ]);
+
+        foreach ($data['rates'] as $r) {
+            Fare_Metrix::updateOrCreate(
+                [
+                    'vehicle_category_id' => $data['vehicle_id'],
+                    'slot_id'    => $r['slot_id'],
+                ],
+                ['rate' => $r['rate']]
+            );
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+       public function deleteRate(Request $request)
+    {
+        $request->validate(['vehicle_id' => 'required|integer']);
+        Fare_Metrix::where('vehicle_category_id', $request->vehicle_id)->delete();
+
+        return response()->json(['success' => true]);
     }
 }
