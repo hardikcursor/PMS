@@ -16,9 +16,11 @@
                        <span class="logo-sm">
                            {{-- <img src="{{ asset('admin_assets/images/logo-light.svg') }}" alt="" height="22"> --}}
                        </span>
-                       <span class="logo-lg" style="display: flex; align-items: center; width: 250px;">
+                       <span class="logo-lg" style="display: flex; align-items: center; width: 450px;">
                            {{-- <img src="{{ asset('admin_assets/images/logo-light.png') }}" alt="" height="19"> --}}
-                           <img src="{{ asset('admin_assets/images/Cursor_LOGO.png') }}" alt="" height="19">
+                           <img src="{{ Auth::user()->image ? asset('admin/uploads/company/' . Auth::user()->image) : asset('admin_assets/images/users/avatar-1.jpg') }}" alt="" height="19"
+                               style="margin-left: 30px; width: 100px; height: 20%;">
+                           
 
                        </span>
 
@@ -83,8 +85,9 @@
                    <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                        <img class="rounded-circle header-profile-user"
-                           src="{{ asset('admin_assets/images/users/avatar-1.jpg') }}" alt="Header Avatar">
-                       <span class="d-none d-xl-inline-block ms-1" key="t-henry">Henry</span>
+                           src="{{ Auth::user()->image ? asset('admin/uploads/company/' . Auth::user()->image) : asset('admin_assets/images/users/avatar-1.jpg') }}"
+                           alt="User Avatar">
+                       <span class="d-none d-xl-inline-block ms-1" key="t-henry">{{ Auth::user()->name }}</span>
                        <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                    </button>
                    <div class="dropdown-menu dropdown-menu-end">

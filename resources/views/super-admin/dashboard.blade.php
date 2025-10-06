@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.super-admin')
 
 @section('content')
     <div class="main-content">
@@ -109,7 +109,7 @@
                                     <div class="card-body">
                                         <div class="d-flex">
                                             <div class="flex-grow-1">
-                                                <p class="text-muted fw-medium">Enabled Companies</p>
+                                                <p class="text-muted fw-medium">Active Agencies</p>
                                                 <h4 class="mb-0">{{ $company->where('status', 1)->count() }}</h4>
                                             </div>
 
@@ -129,7 +129,7 @@
                                     <div class="card-body">
                                         <div class="d-flex">
                                             <div class="flex-grow-1">
-                                                <p class="text-muted fw-medium">Disabled Companies</p>
+                                                <p class="text-muted fw-medium">Inactive Agencies</p>
                                                 <h4 class="mb-0">{{ $company->where('status', 0)->count() }}</h4>
                                             </div>
 
@@ -158,9 +158,34 @@
                             </div>
                         </div>
 
+                        <!-- Bootstrap Modal -->
+                        <div class="modal fade" id="companyModal" tabindex="-1" aria-labelledby="companyModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="companyModalLabel">Company List</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h6 id="monthTitle"></h6>
+                                        <ul id="companyList"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
+                                var months = @json($months);
+
+                                // Company Names (from controller)
+                                var enabledNames = @json($enabledNames); // [["Comp1","Comp2"], ...]
+                                var disabledNames = @json($disabledNames); // [["CompA","CompB"], ...]
+                                var posNames = @json($posNames); // [["POS1","POS2"], ...]
+
                                 var options = {
                                     chart: {
                                         type: 'bar',
@@ -168,6 +193,45 @@
                                         stacked: true,
                                         toolbar: {
                                             show: false
+                                        },
+                                        events: {
+                                            dataPointSelection: function(event, chartContext, config) {
+                                                let monthIndex = config.dataPointIndex;
+                                                let seriesIndex = config.seriesIndex;
+
+                                                let listData = [];
+                                                let title = "";
+
+                                                if (seriesIndex === 0) { // ✅ Enabled
+                                                    listData = enabledNames[monthIndex] || [];
+                                                    title = "Enabled Companies";
+                                                } else if (seriesIndex === 1) { // ✅ Disabled
+                                                    listData = disabledNames[monthIndex] || [];
+                                                    title = "Disabled Companies";
+                                                } else if (seriesIndex === 2) { // ✅ POS
+                                                    listData = posNames[monthIndex] || [];
+                                                    title = "POS Machines";
+                                                }
+
+                                                document.getElementById("companyModalLabel").innerText = title;
+                                                document.getElementById("monthTitle").innerText = months[monthIndex];
+
+                                                let listContainer = document.getElementById("companyList");
+                                                listContainer.innerHTML = "";
+
+                                                if (listData.length > 0) {
+                                                    listData.forEach(function(name) {
+                                                        let li = document.createElement("li");
+                                                        li.textContent = name;
+                                                        listContainer.appendChild(li);
+                                                    });
+                                                } else {
+                                                    listContainer.innerHTML = "<li>No records found</li>";
+                                                }
+
+                                                var modal = new bootstrap.Modal(document.getElementById('companyModal'));
+                                                modal.show();
+                                            }
                                         }
                                     },
                                     series: [{
@@ -180,13 +244,13 @@
                                         },
                                         {
                                             name: "POS Machines",
-                                            data: @json($posMachineCounts) // new series
+                                            data: @json($posMachineCounts)
                                         }
                                     ],
                                     xaxis: {
-                                        categories: @json($months)
+                                        categories: months
                                     },
-                                    colors: ["#34c38f", "#f46a6a", "#556ee6"], // POS Machines color: blue
+                                    colors: ["#34c38f", "#f46a6a", "#556ee6"],
                                     dataLabels: {
                                         enabled: true
                                     },
@@ -199,6 +263,9 @@
                                 chart.render();
                             });
                         </script>
+
+
+
 
 
 
@@ -322,6 +389,6 @@
 
 
         <!-- end modal -->
-        @include('include.admin.footer')
+        @include('include.super-admin.footer')
     </div>
 @endsection

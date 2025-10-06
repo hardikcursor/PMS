@@ -32,10 +32,10 @@ class AuthController extends Controller
             if ($user->hasRole('Super-admin')) {
                 return redirect()->route('superadmin.dashboard');
             } elseif ($user->hasRole('Company-admin')) {
-                
+                return redirect()->route('admin.dashboard');
             } else {
                 Auth::logout();
-              
+                return redirect()->route('login');
             }
         } else {
             return back()->with('error', 'Incorrect Email or password. Please try again.');

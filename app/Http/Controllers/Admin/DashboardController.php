@@ -78,36 +78,36 @@ class DashboardController extends Controller
             $monthKeys[] = $dt->format('Y-m');
         }
 
-        // Enabled Companies counts per month
+        // Enabled Companies counts + names per month
         $enabledRows = User::role('Company-admin')
             ->where('status', 1)
             ->where('created_at', '>=', $start)
-            ->selectRaw('YEAR(created_at) AS year, MONTH(created_at) AS month, COUNT(*) AS total')
-            ->groupBy('year', 'month')
             ->get()
-            ->mapWithKeys(function ($row) {
-                $key = $row->year . '-' . str_pad($row->month, 2, '0', STR_PAD_LEFT);
-                return [$key => (int) $row->total];
+            ->groupBy(function ($item) {
+                return $item->created_at->format('Y-m');
             });
 
-        // Disabled Companies counts per month
+        $enabledCounts = [];
+        $enabledNames  = [];
+        foreach ($monthKeys as $key) {
+            $enabledCounts[] = isset($enabledRows[$key]) ? $enabledRows[$key]->count() : 0;
+            $enabledNames[]  = isset($enabledRows[$key]) ? $enabledRows[$key]->pluck('name')->toArray() : [];
+        }
+
+        // Disabled Companies counts + names per month
         $disabledRows = User::role('Company-admin')
             ->where('status', 0)
             ->where('created_at', '>=', $start)
-            ->selectRaw('YEAR(created_at) AS year, MONTH(created_at) AS month, COUNT(*) AS total')
-            ->groupBy('year', 'month')
             ->get()
-            ->mapWithKeys(function ($row) {
-                $key = $row->year . '-' . str_pad($row->month, 2, '0', STR_PAD_LEFT);
-                return [$key => (int) $row->total];
+            ->groupBy(function ($item) {
+                return $item->created_at->format('Y-m');
             });
 
-        // Build arrays for chart
-        $enabledCounts  = [];
         $disabledCounts = [];
+        $disabledNames  = [];
         foreach ($monthKeys as $key) {
-            $enabledCounts[]  = $enabledRows->get($key, 0);
-            $disabledCounts[] = $disabledRows->get($key, 0);
+            $disabledCounts[] = isset($disabledRows[$key]) ? $disabledRows[$key]->count() : 0;
+            $disabledNames[]  = isset($disabledRows[$key]) ? $disabledRows[$key]->pluck('name')->toArray() : [];
         }
 
         // POS Machines counts per month
@@ -120,7 +120,22 @@ class DashboardController extends Controller
             $posMachineCounts[] = $count;
         }
 
-        // Fetch all subscriptions with related company devices
+        // <<< MINIMAL ADDITION: ensure $posNames exists so view won't error.
+        // We keep it empty arrays so your existing view logic can handle no-pos-names gracefully.
+        $posNames = [];
+        foreach ($monthKeys as $key) {
+            [$year, $month] = explode('-', $key);
+
+            // Fetch all POS Machines created in that month
+            $posMachines = PosMachine::whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->get();
+
+                                                                  // Store their names/IDs for that month
+             $posNames[] = $posMachines->pluck('serial_number')->toArray();  // replace 'name' with actual column
+        }
+
+        // Subscriptions with related company devices
         $license = Subscription::with(['subcreatedcompany.devices'])->get();
 
         return view('super-admin.dashboard', compact(
@@ -129,6 +144,9 @@ class DashboardController extends Controller
             'enabledCounts',
             'disabledCounts',
             'posMachineCounts',
+            'enabledNames',
+            'disabledNames',
+            'posNames', 
             'license'
         ));
     }

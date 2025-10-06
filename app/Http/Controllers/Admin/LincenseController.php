@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -9,7 +8,7 @@ use Illuminate\Http\Request;
 
 class LincenseController extends Controller
 {
-     public function index(Request $request)
+    public function index(Request $request)
     {
         $subscriptions = Subscription::with('company', 'license')->get();
 
@@ -31,6 +30,7 @@ class LincenseController extends Controller
             'license_validity' => 'required|date',
         ]);
 
+        // Save subscription
         $subscription             = new Subscription();
         $subscription->company_id = $request->Company;
         $subscription->name       = $request->SubscriptionName;
@@ -38,13 +38,21 @@ class LincenseController extends Controller
         $subscription->duration   = $request->license_validity;
         $subscription->save();
 
-        return redirect()->route('superadmin.subscription.manage')->with('success', 'Licence added successfully');
+        // 🔹 Update user status = 1 automatically
+        $user = User::find($request->Company);
+        if ($user) {
+            $user->status = 1;
+            $user->save();
+        }
+
+        return redirect()->route('superadmin.subscription.manage')
+            ->with('success', 'Licence added successfully & company enabled automatically');
     }
 
     public function edit($id)
     {
         $subscription = Subscription::findOrFail($id);
-        $companies   = User::role('company-admin')->get();
+        $companies    = User::role('company-admin')->get();
         return view('super-admin.addlincense.edit', compact('subscription', 'companies'));
     }
 
@@ -66,7 +74,6 @@ class LincenseController extends Controller
 
         return redirect()->route('superadmin.subscription.manage')->with('success', 'Licence updated successfully');
     }
-
 
     public function destroy($id)
     {

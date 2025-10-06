@@ -21,5 +21,5 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/vehicles', [VehicleController::class, 'show']);
 Route::post('/fares', [FaremetrixController::class, 'getFareMatrix']);
 
-Route::get('/headersfooter', [HeaderFooterController::class, 'getHeaderFooter']);
-Route::get('/get-address', [HeaderFooterController::class, 'getAddress']);
+Route::post('/headersfooter', [HeaderFooterController::class, 'getHeaderFooter']);
+Route::post('/get-address', [HeaderFooterController::class, 'getAddress']);

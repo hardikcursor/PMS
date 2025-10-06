@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('serial_number')->unique();
             $table->string('android_id')->nullable();
+            $table->boolean('status')->default(0); 
             $table->timestamps();
         });
     }

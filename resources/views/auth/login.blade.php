@@ -1,11 +1,6 @@
 <!doctype html>
 <html lang="en">
-
-
-<!-- Mirrored from themesbrand.com/skote-django/layouts/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 08 Apr 2023 04:28:49 GMT -->
-
 <head>
-
     <meta charset="utf-8" />
     <title>Login Page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +18,6 @@
     <link href="{{ asset('admin_assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 
 </head>
-
 <body>
     <div class="account-pages my-5 pt-sm-5">
         <div class="container">
@@ -35,7 +29,7 @@
                                 <div class="col-7">
                                     <div class="text-primary p-4">
                                         <h5 class="text-primary">Welcome Back !</h5>
-                                        <p>Sign in to continue to Skote.</p>
+                                        <p>Sign in to continue to Company.</p>
                                     </div>
                                 </div>
                                 <div class="col-5 align-self-end">
@@ -126,14 +120,10 @@
                                     </div>
                                 </form>
                             </div>
-
                         </div>
                     </div>
-           
-
                 </div>
             </div>
-        </div>
     </div>
     <!-- end account-pages -->
 
@@ -147,7 +137,4 @@
     <!-- App js -->
     <script src="{{ asset('admin_assets/js/app.js') }}"></script>
 </body>
-
-<!-- Mirrored from themesbrand.com/skote-django/layouts/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 08 Apr 2023 04:28:49 GMT -->
-
 </html>

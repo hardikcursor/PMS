@@ -7,6 +7,7 @@ use App\Models\Footer;
 use App\Models\GST_INFO;
 use App\Models\Header;
 use App\Models\License;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,8 +17,21 @@ class CompanyController extends Controller
 
     public function managecompany()
     {
+       
+        $expiredSubscriptions = Subscription::whereDate('duration', '<', now())->get();
+
+        foreach ($expiredSubscriptions as $subscription) {
+            $user = User::find($subscription->company_id);
+            if ($user && $user->status == 1) {
+                $user->status = 0; 
+                $user->save();
+            }
+        }
+
+      
         $company      = User::with('license', 'subscriptionprice')->role('Company-admin')->get();
         $companyCount = $company->count();
+
         return view('super-admin.company.managecompany', compact('company', 'companyCount'));
     }
 

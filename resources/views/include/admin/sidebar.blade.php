@@ -9,74 +9,48 @@
                      <li class="menu-title" key="t-menu">Menu</li>
 
                      <li>
-                         <a href="{{ route('superadmin.dashboard') }}" class="waves-effect">
+                         <a href="{{ route('admin.dashboard') }}" class="waves-effect">
                              <i class="bx bx-home-circle"></i>
                              <span key="t-dashboards">Dashboards</span>
                          </a>
                      </li>
-
-
                      <li class="menu-title" key="t-apps">Apps</li>
 
-
-
                      <li>
-                         <a href="javascript: void(0);" class="has-arrow waves-effect">
-                             <i class="bx bx-envelope"></i>
-                             <span key="t-email">Company</span>
-                         </a>
-                         <ul class="sub-menu" aria-expanded="false">
-                             <li><a href="{{ route('superadmin.company.create') }}" key="t-inbox">Create Company</a>
-                             </li>
-                             <li><a href="{{ route('superadmin.company.manage') }}" key="t-read-email">Manage
-                                     Company</a></li>
-                             <li>
-                                 <a href="{{ route('superadmin.company.activate') }}">
-                                     <span key="t-email-templates">Active Companies</span>
-                                 </a>
-                             </li>
-
-                                    <li>
-                                 <a href="{{ route('superadmin.company.inactive') }}">
-                                     <span key="t-email-templates">Inactive Companies</span>
-                                 </a>
-                             </li>
-                         </ul>
-                     </li>
-                     <li>
-                         <a href="{{ route('superadmin.adddevices.index') }}" class="waves-effect">
+                         <a href="{{ route('admin.adddevices.index') }}" class="waves-effect">
                              <i class="bx bx-home-circle"></i>
                              <span key="t-dashboards">Add Devices</span>
                          </a>
                      </li>
 
                      <li>
-                         <a href="{{ route('superadmin.faremetrix.index') }}" class="waves-effect">
+                         <a href="{{ route('admin.faremetrix.index') }}" class="waves-effect">
                              <i class="bx bx-home-circle"></i>
                              <span key="t-dashboards">Add Fare Metrix</span>
                          </a>
                      </li>
 
+
                      <li>
-                         <a href="{{ route('superadmin.posuser.manageposuser') }}">
+                         <a href="{{ route('admin.posuser.manageposuser') }}">
                              <i class="bx bx-home-circle"></i>
                              <span key="t-dashboards">Add New Pos User</span>
                          </a>
                      </li>
 
-                         <li>
-                         <a href="{{ route('superadmin.subscription.manage') }}" class="waves-effect">
-                             <i class="bx bx-home-circle"></i>
-                             <span key="t-dashboards">Add License</span>
-                         </a>
-                     </li>
-
-
-
-
-
-
-
+                
+                        <li>
+                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                    <i class="bx bx-home-circle"></i>
+                                    <span key="t-dashboards">Reports</span>
+                                </a>
+                                <ul class="sub-menu" aria-expanded="false">
+                                    <li><a href="{{ route('admin.reports.daily') }}" key="t-default">Daily Collection Reports</a></li>
+                                    <li><a href="dashboard-saas.html" key="t-saas">Userwise Reports</a></li>
+                                    <li><a href="dashboard-crypto.html" key="t-crypto">Vehiclewise Transaction Reports</a></li>
+                                    <li><a href="dashboard-blog.html" key="t-blog">Pass Reports</a></li>
+                                </ul>
+                            </li>
                  </ul>
              </div>
              <!-- Sidebar -->

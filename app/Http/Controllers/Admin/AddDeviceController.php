@@ -33,9 +33,23 @@ class AddDeviceController extends Controller
         $posUser->company_id    = $request->Cname;
         $posUser->serial_number = $request->Srnumber;
         $posUser->android_id    = $request->AndroidId;
+        $posUser->status        = 1; // Default to active
         $posUser->save();
 
         return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device added successfully.');
+    }
+
+        public function changestatus(Request $request)
+    {
+        $machine = PosMachine::find($request->id);
+
+        if ($machine) {
+            $machine->status = $request->val;
+            $machine->save();
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 404);
     }
 
     public function edit($id)

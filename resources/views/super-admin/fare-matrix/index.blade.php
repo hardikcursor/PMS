@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.super-admin')
 <style>
     .rate-input {
         min-width: 40px;
