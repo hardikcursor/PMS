@@ -54,8 +54,8 @@
                                             <tr>
                                                 <td class="text-center">{{ ++$key }}</td>
                                                 <td>{{ $posUser->company->name }}</td>
-                                                <td class="text-end">{{ $posUser->UserName }}</td>
-                                                <td class="text-end">{{ $posUser->user_rights }}</td>
+                                                <td class="text-end">{{ $posUser->name }}</td>
+                                                <td class="text-end">{{ $posUser->position }}</td>
                                                 <td class="text-end">{{ $posUser->login_id }}</td>
                                                 <td class="text-center">
                                                   <a href="{{ route('superadmin.posuser.editposuser', $posUser->id) }}"

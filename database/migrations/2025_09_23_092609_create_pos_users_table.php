@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('pos_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
-            $table->string('user_rights');
-            $table->string('UserName');
+            $table->string('position');
+            $table->string('name');
             $table->string('login_id')->unique();
             $table->string('password');
             $table->timestamps();

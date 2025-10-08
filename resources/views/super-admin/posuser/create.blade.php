@@ -57,7 +57,7 @@
                                         <select class="form-select @error('user_rights') is-invalid @enderror" name="user_rights">
                                             <option value="" disabled selected>Select User Rights</option>
                                             <option value="operator" {{ old('user_rights') == 'operator' ? 'selected' : '' }}>Operator</option>
-                                            <option value="admin" {{ old('user_rights') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="supervisor {{ old('user_rights') == 'admin' ? 'selected' : '' }}">Supervisor</option>
                                         </select>
                                         @error('user_rights')
                                             <small class="text-danger">{{ $message }}</small>

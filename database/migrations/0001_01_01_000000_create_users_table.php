@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('fax_no')->nullable();
             $table->string('image')->nullable();
             $table->string('status')->default(0);
+            $table->string('position')->nullable();
             $table->string('location')->nullable();
             $table->timestamps();
         });

@@ -16,12 +16,12 @@
                      </li>
                      <li class="menu-title" key="t-apps">Apps</li>
 
-                     <li>
+                     {{-- <li>
                          <a href="{{ route('admin.adddevices.index') }}" class="waves-effect">
                              <i class="bx bx-home-circle"></i>
                              <span key="t-dashboards">Add Devices</span>
                          </a>
-                     </li>
+                     </li> --}}
 
                      <li>
                          <a href="{{ route('admin.faremetrix.index') }}" class="waves-effect">
@@ -31,12 +31,12 @@
                      </li>
 
 
-                     <li>
+                     {{-- <li>
                          <a href="{{ route('admin.posuser.manageposuser') }}">
                              <i class="bx bx-home-circle"></i>
                              <span key="t-dashboards">Add New Pos User</span>
                          </a>
-                     </li>
+                     </li> --}}
 
                 
                         <li>
@@ -46,8 +46,8 @@
                                 </a>
                                 <ul class="sub-menu" aria-expanded="false">
                                     <li><a href="{{ route('admin.reports.daily') }}" key="t-default">Daily Collection Reports</a></li>
+                                    <li><a href="{{ route('admin.reports.vehicle') }}" key="t-crypto">Vehiclewise  Reports</a></li>
                                     <li><a href="dashboard-saas.html" key="t-saas">Userwise Reports</a></li>
-                                    <li><a href="dashboard-crypto.html" key="t-crypto">Vehiclewise Transaction Reports</a></li>
                                     <li><a href="dashboard-blog.html" key="t-blog">Pass Reports</a></li>
                                 </ul>
                             </li>

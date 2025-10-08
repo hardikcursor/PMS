@@ -55,10 +55,10 @@
                                 <div class="mb-3 row">
                                     <label class="col-sm-3 col-form-label">User Rights</label>
                                     <div class="col-sm-9">
-                                        <select class="form-select @error('user_rights') is-invalid @enderror" name="user_rights">
+                                        <select class="form-select @error('position') is-invalid @enderror" name="position">
                                             <option value="" disabled selected>Select User Rights</option>
-                                            <option value="operator" {{ $posuser->user_rights == 'operator' ? 'selected' : '' }}>Operator</option>
-                                            <option value="admin" {{ $posuser->user_rights == 'admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="operator" {{ $posuser->position == 'operator' ? 'selected' : '' }}>Operator</option>
+                                            <option value="supervisor" {{ $posuser->position == 'supervisor' ? 'selected' : '' }}>Supervisor</option>
                                         </select>
                                         @error('user_rights')
                                             <small class="text-danger">{{ $message }}</small>
@@ -70,8 +70,8 @@
                                 <div class="mb-3 row">
                                     <label class="col-sm-3 col-form-label">User Name</label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="UserName" class="form-control @error('UserName') is-invalid @enderror"
-                                               value="{{ old('UserName', $posuser->UserName) }}" placeholder="Enter user name">
+                                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                                               value="{{ old('UserName', $posuser->name) }}" placeholder="Enter user name">
                                         @error('UserName')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
@@ -90,17 +90,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Password -->
-                                <div class="mb-3 row">
-                                    <label class="col-sm-3 col-form-label">Password</label>
-                                    <div class="col-sm-9">
-                                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-                                               placeholder="Enter password" value="{{ old('password', $posuser->password) }}">
-                                        @error('password')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
+                     
 
                                 <!-- Submit Button -->
                                 <div class="row justify-content-end">

@@ -11,4 +11,9 @@ class ReportsController extends Controller
     {
         return view('company-admin.Reports.dailyreport');
     }
+
+    public function vehicleReport()
+    {
+        return view('company-admin.Reports.vehiclereport');
+    }
 }

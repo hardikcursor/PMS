@@ -417,5 +417,3 @@
         </script>
     @endsection
 @endsection
-@section('styles')
-    <link href="{{ asset('admin_assets/libs/jquery-steps/build/jquery.steps.css') }}" rel="stylesheet" type="text/css" />

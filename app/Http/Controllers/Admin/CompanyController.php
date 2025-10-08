@@ -17,18 +17,17 @@ class CompanyController extends Controller
 
     public function managecompany()
     {
-       
+
         $expiredSubscriptions = Subscription::whereDate('duration', '<', now())->get();
 
         foreach ($expiredSubscriptions as $subscription) {
             $user = User::find($subscription->company_id);
             if ($user && $user->status == 1) {
-                $user->status = 0; 
+                $user->status = 0;
                 $user->save();
             }
         }
 
-      
         $company      = User::with('license', 'subscriptionprice')->role('Company-admin')->get();
         $companyCount = $company->count();
 
@@ -79,6 +78,7 @@ class CompanyController extends Controller
         $user->fax_no   = $request->fax;
         $user->email    = $request->email;
         $user->password = Hash::make($request->password);
+        $user->position = "admin";
 
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
@@ -137,6 +137,7 @@ class CompanyController extends Controller
 
     public function edit($id)
     {
+        // Load company with all related info
         $company = User::with(['license', 'header', 'footer', 'gstInfo', 'accountInfo'])->findOrFail($id);
 
         return view('super-admin.company.edit', compact('company'));
@@ -150,11 +151,10 @@ class CompanyController extends Controller
             'phone_no'         => 'required|string|max:20',
             'fax'              => 'nullable|string|max:20',
             'email'            => 'required|email|unique:users,email,' . $id,
-            'password'         => 'nullable|string|min:6',
             'logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
             'license_key'      => 'nullable|string|max:255',
-            'license_validity' => 'required|date|after_or_equal:today',
+            'license_validity' => 'nullable|date|after_or_equal:today',
             'android_version'  => 'nullable|string|max:50',
 
             'header1'          => 'nullable|string|max:15',
@@ -174,24 +174,73 @@ class CompanyController extends Controller
             'pan_no'           => 'nullable|string|max:50',
         ]);
 
-        $user           = User::findOrFail($id);
-        $user->name     = $request->agency_name;
-        $user->address  = $request->address;
-        $user->phone_no = $request->phone_no;
-        $user->fax_no   = $request->fax;
-        $user->email    = $request->email;
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
+        $company                  = User::findOrFail($id);
+        $company->name            = $request->agency_name;
+        $company->address         = $request->address;
+        $company->phone_no        = $request->phone_no;
+        $company->fax             = $request->fax;
+        $company->email           = $request->email;
+        $company->android_version = $request->android_version;
+        $company->position = 'admin';
+        // Upload logo
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
             $filename = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('admin/uploads/company/'), $filename);
-            $user->image = $filename;
+            $company->image = $filename;
         }
 
-        $user->save();
+        $company->save();
+
+        // License info
+        $company->license()->updateOrCreate(
+            ['user_id' => $company->id],
+            [
+                'license_key'      => $request->license_key ?? '',
+                'license_validity' => $request->license_validity ?? null,
+            ]
+        );
+
+        // GST info
+        $company->gstInfo()->updateOrCreate(
+            ['user_id' => $company->id],
+            [
+                'gst_number' => $request->gst_no ?? '',
+                'c_gst'      => $request->c_gst ?? 0,
+                's_gst'      => $request->s_gst ?? 0,
+            ]
+        );
+
+        // Account info
+        $company->accountInfo()->updateOrCreate(
+            ['user_id' => $company->id],
+            [
+                'cin_number' => $request->cin_no ?? '',
+                'pan_number' => $request->pan_no ?? '',
+            ]
+        );
+
+        // Header info
+        $company->header()->updateOrCreate(
+            ['user_id' => $company->id],
+            [
+                'header1' => $request->header1 ?? '',
+                'header2' => $request->header2 ?? '',
+                'header3' => $request->header3 ?? '',
+                'header4' => $request->header4 ?? '',
+            ]
+        );
+
+        // Footer info
+        $company->footer()->updateOrCreate(
+            ['user_id' => $company->id],
+            [
+                'footer1' => $request->footer1 ?? '',
+                'footer2' => $request->footer2 ?? '',
+                'footer3' => $request->footer3 ?? '',
+                'footer4' => $request->footer4 ?? '',
+            ]
+        );
 
         return redirect()->route('superadmin.company.manage')
             ->with('success', 'Company updated successfully');

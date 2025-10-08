@@ -125,6 +125,7 @@ Route::middleware(['auth', 'CompanyAdmin'])->group(function () {
 
         Route::prefix('reports')->group(function () {
             Route::get('/daily', [\App\Http\Controllers\CompanyAdmin\ReportsController::class, 'dailyreport'])->name('admin.reports.daily');
+            Route::get('/vehicle', [\App\Http\Controllers\CompanyAdmin\ReportsController::class, 'vehicleReport'])->name('admin.reports.vehicle');
         });
     });
 
