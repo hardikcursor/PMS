@@ -37,12 +37,12 @@
 
 
                                     <tbody id="subscriptionsBody">
-                            
-                                            <tr>
-                                                <td class="text-center">1</td>
-                                                <td class="text-center">2</td>
-                                                <td class="text-center">3</td>
-                                                <td class="text-center">4</td>
+                                        @foreach ($report as $reports)
+                                               <tr>
+                                                <td class="text-center">{{ $reports->serial_number}}</td>
+                                                <td class="text-center">{{ $reports->vehicle_type }}</td>
+                                                <td class="text-center">{{ $reports->pos_user_count }}</td>
+                                                <td class="text-center">{{ $reports->amount }}</td>
                                                 <td class="text-center">
                                                   <a href=""
                                                         class="edit-row"><i class="fas fa-edit text-warning"></i></a>
@@ -60,6 +60,8 @@
                                                     </form>
                                                 </td>
                                             </tr>
+                                        @endforeach
+                                         
                                          
                                     </tbody>
                                 </table>

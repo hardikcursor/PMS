@@ -20,6 +20,7 @@ Route::get('/user', function (Request $request) {
 
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/masterlogin', [AuthController::class, 'masterlogin']);
 Route::get('/vehicles', [VehicleController::class, 'show']);
 Route::post('/fares', [FaremetrixController::class, 'getFareMatrix']);
 

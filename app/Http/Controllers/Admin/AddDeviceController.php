@@ -39,7 +39,7 @@ class AddDeviceController extends Controller
         return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device added successfully.');
     }
 
-        public function changestatus(Request $request)
+    public function changestatus(Request $request)
     {
         $machine = PosMachine::find($request->id);
 
@@ -68,7 +68,7 @@ class AddDeviceController extends Controller
         ]);
 
         // Find the existing POS user
-        $posUser = PosMachine::findOrFail($id);
+        $posUser                = PosMachine::findOrFail($id);
         $posUser->company_id    = $request->Cname;
         $posUser->serial_number = $request->Srnumber;
         $posUser->android_id    = $request->AndroidId;

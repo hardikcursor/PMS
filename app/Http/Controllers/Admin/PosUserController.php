@@ -36,7 +36,7 @@ class PosUserController extends Controller
             $posuser->position = $request->user_rights;
             $posuser->name    = $request->UserName;
             $posuser->login_id    = $request->login_id;
-            $posuser->password    = bcrypt($request->password);
+            $posuser->password    =$request->password;
             $posuser->save();
 
             return redirect()->route('superadmin.posuser.manageposuser')
