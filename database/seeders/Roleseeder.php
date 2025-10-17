@@ -13,6 +13,8 @@ class Roleseeder extends Seeder
     {
         $role = Role::create(['name' => 'Super-admin']);
         $role = Role::create(['name' => 'Company-admin']);
+        $role = Role::create(['name' => 'User']);
         $role = Role::create(['name' => 'POS-user']);
+
     }
 }

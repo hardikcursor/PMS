@@ -36,109 +36,71 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <form method="GET" id="companyFilterForm" class="mb-3">
-                                    <select name="user_id" id="user_id" class="form-select vehicle-select"
-                                        onchange="document.getElementById('companyFilterForm').submit()">
-                                        <option value="">-- Select Company --</option>
-                                        @foreach ($companyCategories as $category)
-                                            <option value="{{ $category->id }}"
-                                                {{ $selectedCompany == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
+                <div id="alert-placeholder"></div> <!-- Alert messages AJAX के लिए -->
+
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Hours</th>
+                                @foreach ($slots as $slot)
+                                    <th>{{ $slot->slot_hours }}</th>
+                                @endforeach
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($faremetrix->isNotEmpty())
+                                @foreach ($faremetrix->groupBy('vehicleCategory.id') as $vehicleRates)
+                                    @php
+                                        $vehicle = $vehicleRates->first()->vehicleCategory;
+                                    @endphp
+                                    <tr class="rate-row" data-vehicle-id="{{ $vehicle->id }}">
+                                        <td class="text-start">{{ $vehicle->vehicle_type }}</td>
+
+                                        @foreach ($slots as $slot)
+                                            @php
+                                                $record = $vehicleRates->where('slot_id', $slot->id)->first();
+                                                $rate = $record->rate ?? '';
+                                                if (is_numeric($rate)) {
+                                                    $rate = rtrim(rtrim(number_format($rate, 2, '.', ''), '0'), '.');
+                                                }
+                                            @endphp
+                                            <td>
+                                                <input type="text" value="{{ $rate }}"
+                                                    class="form-control form-control-sm text-center rate-input"
+                                                    data-slot-id="{{ $slot->id }}" disabled />
+                                            </td>
                                         @endforeach
-                                    </select>
-                                </form>
 
-                                <div class="table-responsive">
-                                    <table class="table table-bordered text-center align-middle">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Hours</th>
-                                                @if ($selectedCompany)
-                                                    @foreach ($slots as $slot)
-                                                        <th>{{ $slot->slot_hours }}</th>
-                                                    @endforeach
-                                                    <th>Actions</th>
-                                                @endif
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if ($selectedCompany)
-                                                @if ($faremetrix->isNotEmpty())
-                                                    @foreach ($faremetrix->groupBy('vehicleCategory.id') as $vehicleRates)
-                                                        @php
-                                                            $vehicle = $vehicleRates->first()->vehicleCategory;
-                                                        @endphp
-                                                        <tr class="rate-row" data-vehicle-id="{{ $vehicle->id }}">
-                                                         <td class="text-start">{{ $vehicle->vehicle_type }}</td>
-
-                                                            @foreach ($slots as $slot)
-                                                                @php
-                                                                    $record = $vehicleRates
-                                                                        ->where('slot_id', $slot->id)
-                                                                        ->first();
-                                                                    $rate = $record->rate ?? '';
-                                                                    if (is_numeric($rate)) {
-                                                                        $rate = rtrim(
-                                                                            rtrim(
-                                                                                number_format($rate, 2, '.', ''),
-                                                                                '0',
-                                                                            ),
-                                                                            '.',
-                                                                        );
-                                                                    }
-                                                                @endphp
-                                                                <td>
-                                                                    <input type="text" value="{{ $rate }}"
-                                                                        class="form-control form-control-sm text-center rate-input"
-                                                                        data-slot-id="{{ $slot->id }}" disabled />
-                                                                </td>
-                                                            @endforeach
-                                                            <td>
-                                                                <a href="javascript:void(0)" class="edit-row"><i
-                                                                        class="fas fa-edit text-warning"></i></a>
-                                                                <a href="javascript:void(0)" class="save-row d-none"><i
-                                                                        class="fas fa-check text-success"></i></a>
-                                                                <a href="javascript:void(0)" class="cancel-row d-none"><i
-                                                                        class="fas fa-times text-danger"></i></a>
-                                                                <a href="javascript:void(0)"
-                                                                    class="delete-row text-danger ms-2"><i
-                                                                        class="fas fa-trash-alt"></i></a>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                @else
-                                                    <tr>
-                                                        <td colspan="{{ $slots->count() + 2 }}"
-                                                            class="text-center text-muted">No records found</td>
-                                                    </tr>
-                                                @endif
-                                            @else
-                                                <tr>
-                                                    <td colspan="{{ $slots->count() + 2 }}" class="text-center text-muted">
-                                                        Please select a company</td>
-                                                </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        <td>
+                                            <a href="javascript:void(0)" class="edit-row"><i
+                                                    class="fas fa-edit text-warning"></i></a>
+                                            <a href="javascript:void(0)" class="save-row d-none"><i
+                                                    class="fas fa-check text-success"></i></a>
+                                            <a href="javascript:void(0)" class="cancel-row d-none"><i
+                                                    class="fas fa-times text-danger"></i></a>
+                                            <a href="javascript:void(0)" class="delete-row text-danger ms-2"><i
+                                                    class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="{{ $slots->count() + 2 }}" class="text-center text-muted">
+                                        No records found
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
 
 
 
-                            </div>
-                        </div>
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
 
-
-
-            </div> <!-- container-fluid -->
+            </div>
         </div>
-        <!-- End Page-content -->
 
     </div>
 
@@ -169,7 +131,7 @@
                     row.querySelector('.edit-row').classList.add('d-none');
                     row.querySelector('.save-row').classList.remove('d-none');
                     row.querySelector('.cancel-row').classList.remove('d-none');
-                    row.querySelector('.delete-row').classList.add('d-none'); 
+                    row.querySelector('.delete-row').classList.add('d-none');
                 });
             });
 
@@ -186,7 +148,7 @@
                     row.querySelector('.edit-row').classList.remove('d-none');
                     row.querySelector('.save-row').classList.add('d-none');
                     row.querySelector('.cancel-row').classList.add('d-none');
-                    row.querySelector('.delete-row').classList.remove('d-none'); 
+                    row.querySelector('.delete-row').classList.remove('d-none');
                 });
             });
 
@@ -222,7 +184,7 @@
                     row.querySelector('.save-row').classList.add('d-none');
                     row.querySelector('.cancel-row').classList.add('d-none');
                     row.querySelector('.delete-row').classList.remove(
-                    'd-none'); 
+                        'd-none');
 
                     // AJAX save
                     fetch("{{ route('admin.update.vehicle.rate') }}", {
@@ -289,9 +251,4 @@
 
         });
     </script>
-
-
-
-
-
 @endsection

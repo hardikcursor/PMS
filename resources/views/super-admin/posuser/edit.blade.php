@@ -95,7 +95,7 @@
                                 <!-- Submit Button -->
                                 <div class="row justify-content-end">
                                     <div class="col-sm-9 offset-sm-3">
-                                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                        <button type="submit" class="btn btn-primary w-100">Update</button>
                                     </div>
                                 </div>
 

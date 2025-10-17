@@ -16,7 +16,7 @@ class PosUserController extends Controller
 
     public function create()
     {
-        $category = User::role('company-admin')->get();
+        $category = User::role(['company-admin','User'])->get();
         return view('super-admin.posuser.create', compact('category'));
     }
 

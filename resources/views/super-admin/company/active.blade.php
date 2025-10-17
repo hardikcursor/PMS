@@ -37,7 +37,7 @@
                                             </th>
                                             <th class="sortable" data-field="subscriptionName">SUBSCRIPTION <i
                                                     class="bi bi-arrow-down-up"></i></th>
-                                            <th>ACTIONS</th>
+                                       
                                         </tr>
                                     </thead>
 
@@ -59,10 +59,6 @@
                                                     @else
                                                         N/A
                                                     @endif
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-danger btn-sm" data-id="{{ $company->id }}"
-                                                        id="btn-delete">Delete</button>
                                                 </td>
                                             </tr>
                                         @empty

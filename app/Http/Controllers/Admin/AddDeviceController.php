@@ -16,7 +16,7 @@ class AddDeviceController extends Controller
     }
     public function create()
     {
-        $company = User::role('company-admin')->get();
+        $company = User::role(['company-admin','User'])->get();
         return view('super-admin.adddevices.create', compact('company'));
     }
 

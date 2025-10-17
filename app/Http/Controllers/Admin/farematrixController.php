@@ -39,17 +39,56 @@ class farematrixController extends Controller
     public function addvehicle(Request $request)
     {
         $request->validate([
-            'vehicle_category' => 'required|string|max:255',
+            'vehicle_category' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    // Check if all characters are uppercase
+                    if (! preg_match('/^[A-Z\s]+$/', $value)) {
+                        $fail('The vehicle category must be in all capital letters.');
+                    }
+                },
+            ],
         ], [
             'vehicle_category.required' => 'Please enter a vehicle category.',
         ]);
 
-        $vehicle = new Vehicle();
-
+        $vehicle               = new Vehicle();
         $vehicle->vehicle_type = $request->vehicle_category;
         $vehicle->save();
 
-        return redirect()->route('superadmin.faremetrix.vehicleadd')->with('success', 'Vehicle category added successfully.');
+        return redirect()
+            ->route('superadmin.faremetrix.vehicleadd')
+            ->with('success', 'Vehicle category added successfully.');
+    }
+
+    public function editvehicle($id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+        return response()->json($vehicle); // Return JSON for modal pre-fill
+    }
+
+    public function updatevehicle(Request $request, $id)
+    {
+        $request->validate([
+            'vehicle_category' => 'required|string|max:255',
+        ]);
+
+        $vehicle               = Vehicle::findOrFail($id);
+        $vehicle->vehicle_type = $request->vehicle_category;
+        $vehicle->save();
+
+        return redirect()->route('superadmin.faremetrix.vehicleadd')
+            ->with('success', 'Vehicle category updated successfully.');
+    }
+
+    public function deletevehicle($id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+        $vehicle->delete();
+
+        return redirect()->route('superadmin.faremetrix.vehicleadd')->with('success', 'Vehicle category deleted successfully.');
     }
 
     public function addslot()
@@ -112,7 +151,7 @@ class farematrixController extends Controller
             Fare_Metrix::updateOrCreate(
                 [
                     'vehicle_category_id' => $data['vehicle_id'],
-                    'slot_id'    => $r['slot_id'],
+                    'slot_id'             => $r['slot_id'],
                 ],
                 ['rate' => $r['rate']]
             );
@@ -121,7 +160,7 @@ class farematrixController extends Controller
         return response()->json(['success' => true]);
     }
 
-       public function deleteRate(Request $request)
+    public function deleteRate(Request $request)
     {
         $request->validate(['vehicle_id' => 'required|integer']);
         Fare_Metrix::where('vehicle_category_id', $request->vehicle_id)->delete();

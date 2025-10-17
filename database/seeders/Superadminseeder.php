@@ -16,9 +16,12 @@ class Superadminseeder extends Seeder
     {
         $data = [
             'name' => 'Cursor Soft',
+            'username' => 'Cursorsoft4252',
             'email' => 'cursorsoft@gmail.com',
             'password' => Hash::make('cursorsoft'),
-            'position' => 'superadmin'
+            'position' => 'superadmin',
+            'role' => 'Super-admin',
+            'status' => '1',
         ];
 
         $superadmin = User::create($data);

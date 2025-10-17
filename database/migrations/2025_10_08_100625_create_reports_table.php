@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pos_user_id')->constrained('pos_users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade')->onUpdate('cascade');
             $table->string('serial_number');
             $table->string('bill_no');
-            $table->string('vehicle_no');
-            $table->string('vehicle_type');
+            $table->string('vehicle_no')->nullable();
             $table->string('duration_type');
             $table->string('in_time');
             $table->string('out_time');

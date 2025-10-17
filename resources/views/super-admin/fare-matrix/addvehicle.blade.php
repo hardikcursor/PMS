@@ -5,16 +5,6 @@
         <div class="page-content">
             <div class="container-fluid">
 
-                <!-- start page title -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h4 class="mb-sm-0 font-size-18">Vehicle Form & List</h4>
-                        </div>
-                    </div>
-                </div>
-                <!-- end page title -->
-
                 <!-- Success / Error Messages -->
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
@@ -23,11 +13,10 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
-                <!-- Vehicle Form -->
+                <!-- Add Vehicle Form -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <h4 class="card-title mb-4">Add Vehicle Category</h4>
-
                         <form action="{{ route('superadmin.faremetrix.addvehicle') }}" method="POST">
                             @csrf
                             <div class="row mb-4">
@@ -35,14 +24,12 @@
                                 <div class="col-sm-9">
                                     <input type="text" id="vehicle_category" name="vehicle_category"
                                         class="form-control @error('vehicle_category') is-invalid @enderror"
-                                        placeholder="e.g. Two Wheeler, Four Wheeler"
-                                        value="{{ old('vehicle_category') }}">
+                                        placeholder="e.g. Two Wheeler, Four Wheeler" value="{{ old('vehicle_category') }}">
                                     @error('vehicle_category')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-
                             <div class="row justify-content-end">
                                 <div class="col-sm-9">
                                     <button type="submit" class="btn btn-primary w-md">Submit</button>
@@ -52,11 +39,10 @@
                     </div>
                 </div>
 
-                <!-- Vehicle Table (show below form) -->
+                <!-- Vehicle List Table -->
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title mb-4">Vehicle Category List</h4>
-
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -73,11 +59,16 @@
                                         <td>{{ $vehicle->vehicle_type }}</td>
                                         <td>{{ $vehicle->created_at->format('d-m-Y') }}</td>
                                         <td>
-                                            <a href="{{ route('superadmin.faremetrix.edit', $vehicle->id) }}" class="text-warning me-2">
+                                            <!-- Edit button triggers modal -->
+                                            <button type="button" class="btn btn-link text-warning p-0 me-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editVehicleModal{{ $vehicle->id }}">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="#" 
-                                                  method="POST" style="display:inline-block;">
+                                            </button>
+
+                                            <!-- Delete -->
+                                            <form action="{{ route('superadmin.faremetrix.deletevehicle', $vehicle->id) }}"
+                                                method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-link text-danger p-0"
@@ -85,6 +76,52 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+
+                                            <!-- Modal per vehicle -->
+                                            <div class="modal fade" id="editVehicleModal{{ $vehicle->id }}" tabindex="-1"
+                                                aria-labelledby="editVehicleModalLabel{{ $vehicle->id }}"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form
+                                                            action="{{ route('superadmin.faremetrix.updatevehicle', $vehicle->id) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="editVehicleModalLabel{{ $vehicle->id }}">Edit
+                                                                    Vehicle</h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label for="vehicle_category{{ $vehicle->id }}"
+                                                                        class="form-label">Vehicle Category</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="vehicle_category{{ $vehicle->id }}"
+                                                                        name="vehicle_category"
+                                                                        value="{{ $vehicle->vehicle_type }}">
+                                                                    <span class="text-danger">
+                                                                        @error('vehicle_category')
+                                                                            <div class="text-danger">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-primary">Update
+                                                                    Vehicle</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- End Modal -->
+
                                         </td>
                                     </tr>
                                 @empty

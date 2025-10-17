@@ -12,8 +12,6 @@
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                             <h4 class="mb-sm-0 font-size-18">Dashboard</h4>
 
-
-
                         </div>
                     </div>
                 </div>
@@ -159,37 +157,40 @@
                         </div>
 
                         <!-- Bootstrap Modal -->
+                        <!-- Modal -->
                         <div class="modal fade" id="companyModal" tabindex="-1" aria-labelledby="companyModalLabel"
                             aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
+                            <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="companyModalLabel">Company List</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
+                                        <h5 class="modal-title" id="companyModalLabel">Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <h6 id="monthTitle"></h6>
-                                        <ul id="companyList"></ul>
+                                        <h6 id="monthTitle" class="text-muted mb-3"></h6>
+                                        <ul id="companyList" class="list-group"></ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+
 
                         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
                                 var months = @json($months);
 
-                                // Company Names (from controller)
-                                var enabledNames = @json($enabledNames); // [["Comp1","Comp2"], ...]
-                                var disabledNames = @json($disabledNames); // [["CompA","CompB"], ...]
-                                var posNames = @json($posNames); // [["POS1","POS2"], ...]
+                                var enabledCompanyNames = @json($enabledCompanyNames);
+                                var disabledCompanyNames = @json($disabledCompanyNames);
+                                var enabledUserNames = @json($enabledUserNames);
+                                var disabledUserNames = @json($disabledUserNames);
+                                var posNames = @json($posNames);
 
                                 var options = {
                                     chart: {
                                         type: 'bar',
-                                        height: 350,
+                                        height: 400,
                                         stacked: true,
                                         toolbar: {
                                             show: false
@@ -202,15 +203,27 @@
                                                 let listData = [];
                                                 let title = "";
 
-                                                if (seriesIndex === 0) { // ✅ Enabled
-                                                    listData = enabledNames[monthIndex] || [];
-                                                    title = "Enabled Companies";
-                                                } else if (seriesIndex === 1) { // ✅ Disabled
-                                                    listData = disabledNames[monthIndex] || [];
-                                                    title = "Disabled Companies";
-                                                } else if (seriesIndex === 2) { // ✅ POS
-                                                    listData = posNames[monthIndex] || [];
-                                                    title = "POS Machines";
+                                                switch (seriesIndex) {
+                                                    case 0:
+                                                        listData = enabledCompanyNames[monthIndex] || [];
+                                                        title = "Enabled Companies";
+                                                        break;
+                                                    case 1:
+                                                        listData = disabledCompanyNames[monthIndex] || [];
+                                                        title = "Disabled Companies";
+                                                        break;
+                                                    case 2:
+                                                        listData = enabledUserNames[monthIndex] || [];
+                                                        title = "Enabled Users";
+                                                        break;
+                                                    case 3:
+                                                        listData = disabledUserNames[monthIndex] || [];
+                                                        title = "Disabled Users";
+                                                        break;
+                                                    case 4:
+                                                        listData = posNames[monthIndex] || [];
+                                                        title = "POS Machines";
+                                                        break;
                                                 }
 
                                                 document.getElementById("companyModalLabel").innerText = title;
@@ -236,21 +249,29 @@
                                     },
                                     series: [{
                                             name: "Enabled Companies",
-                                            data: @json($enabledCounts)
+                                            data: @json($enabledCompanyCounts)
                                         },
                                         {
                                             name: "Disabled Companies",
-                                            data: @json($disabledCounts)
+                                            data: @json($disabledCompanyCounts)
+                                        },
+                                        {
+                                            name: "Enabled Users",
+                                            data: @json($enabledUserCounts)
+                                        },
+                                        {
+                                            name: "Disabled Users",
+                                            data: @json($disabledUserCounts)
                                         },
                                         {
                                             name: "POS Machines",
                                             data: @json($posMachineCounts)
-                                        }
+                                        },
                                     ],
                                     xaxis: {
                                         categories: months
                                     },
-                                    colors: ["#34c38f", "#f46a6a", "#556ee6"],
+                                    colors: ["#34c38f", "#f46a6a", "#00c0ef", "#ff9f43", "#556ee6"],
                                     dataLabels: {
                                         enabled: true
                                     },
@@ -263,6 +284,9 @@
                                 chart.render();
                             });
                         </script>
+
+
+
 
 
 

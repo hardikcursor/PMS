@@ -28,7 +28,7 @@ class CompanyController extends Controller
             }
         }
 
-        $company      = User::with('license', 'subscriptionprice')->role('Company-admin')->get();
+        $company      = User::with('license', 'subscriptionprice')->role(['Company-admin','User'])->get();
         $companyCount = $company->count();
 
         return view('super-admin.company.managecompany', compact('company', 'companyCount'));
@@ -45,41 +45,44 @@ class CompanyController extends Controller
             'agency_name'      => 'required|string|max:255',
             'address'          => 'required|string|max:255',
             'phone_no'         => 'required|string|max:20',
+            'phone'            => 'required|string|max:20',
             'fax'              => 'nullable|string|max:20',
             'email'            => 'required|email|unique:users,email',
+            'username'         => 'required|alpha_dash|unique:users,username|max:50',
             'password'         => 'required|string|min:6',
             'logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
             'license_key'      => 'nullable|string|max:255',
             'license_validity' => 'required|date|after_or_equal:today',
             'android_version'  => 'nullable|string|max:50',
-
-            'header1'          => 'nullable|string|max:15',
-            'header2'          => 'nullable|string|max:15',
-            'header3'          => 'nullable|string|max:15',
-            'header4'          => 'nullable|string|max:15',
-            'footer1'          => 'nullable|string|max:15',
-            'footer2'          => 'nullable|string|max:15',
-            'footer3'          => 'nullable|string|max:15',
-            'footer4'          => 'nullable|string|max:15',
-
+            'header1'          => 'nullable|string|max:24',
+            'header2'          => 'nullable|string|max:24',
+            'header3'          => 'nullable|string|max:24',
+            'header4'          => 'nullable|string|max:24',
+            'footer1'          => 'nullable|string|max:24',
+            'footer2'          => 'nullable|string|max:24',
+            'footer3'          => 'nullable|string|max:24',
+            'footer4'          => 'nullable|string|max:24',
             'gst_no'           => 'nullable|string|max:50',
             'c_gst'            => 'nullable|numeric|min:0',
             's_gst'            => 'nullable|numeric|min:0',
-
             'cin_no'           => 'nullable|string|max:50',
             'pan_no'           => 'nullable|string|max:50',
+            'role'             => 'required|string|max:50',
         ]);
 
         $user           = new User();
         $user->name     = $request->agency_name;
         $user->address  = $request->address;
         $user->phone_no = $request->phone_no;
+        $user->phone    = $request->phone;
         $user->fax_no   = $request->fax;
         $user->email    = $request->email;
+        $user->username = $request->username;
         $user->password = Hash::make($request->password);
         $user->position = "admin";
+        $user->role     = $request->role;
 
+       
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
             $filename = time() . '_' . $image->getClientOriginalName();
@@ -88,7 +91,13 @@ class CompanyController extends Controller
         }
 
         $user->save();
-        $user->assignRole('Company-admin');
+
+       
+        if ($user->role === 'admin') {
+            $user->assignRole('Company-admin');
+        } elseif ($user->role === 'user') {
+            $user->assignRole('User');
+        }
 
         // License
         $license                   = new License();
@@ -181,7 +190,7 @@ class CompanyController extends Controller
         $company->fax             = $request->fax;
         $company->email           = $request->email;
         $company->android_version = $request->android_version;
-        $company->position = 'admin';
+        $company->position        = 'admin';
         // Upload logo
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');

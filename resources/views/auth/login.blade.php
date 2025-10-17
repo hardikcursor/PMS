@@ -73,12 +73,12 @@
                                     @csrf
 
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">Email Address</label>
-                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                            id="username" name="email" value="{{ old('email') }}"
-                                            placeholder="Enter email">
+                                        <label for="username" class="form-label">User Name</label>
+                                        <input type="text" class="form-control @error('username') is-invalid @enderror"
+                                            id="username" name="username" value="{{ old('username') }}"
+                                            placeholder="Enter username">
                                         <span class="text-danger">
-                                            @error('email')
+                                            @error('username')
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
                                         </span>

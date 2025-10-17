@@ -36,7 +36,7 @@
 
                                 <h4 class="card-title mb-4">POS Users List</h4>
 
-                                <table id="datatable" class="table table-bordered dt-responsive  nowrap w-100">
+                                  <table id="datatable" class="table table-bordered dt-responsive  nowrap w-100">
                                     <thead>
                                         <tr>
                                             <th scope="col" class="text-center" style="width: 5%;">#</th>

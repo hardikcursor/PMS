@@ -63,7 +63,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // Fetch all companies with license and subscription price
+        // Company data
         $company = User::with('license', 'setsubscriptionprice')
             ->role('Company-admin')
             ->get();
@@ -72,81 +72,109 @@ class DashboardController extends Controller
         $start     = Carbon::now()->startOfMonth()->subMonths(11);
         $months    = [];
         $monthKeys = [];
+
         for ($i = 0; $i < 12; $i++) {
             $dt          = $start->copy()->addMonths($i);
             $months[]    = $dt->format('M Y');
             $monthKeys[] = $dt->format('Y-m');
         }
 
-        // Enabled Companies counts + names per month
-        $enabledRows = User::role('Company-admin')
+        /** --------------------------
+         *  COMPANY ADMIN DATA
+         * -------------------------- */
+        // Enabled Companies
+        $enabledCompanyRows = User::role('Company-admin')
             ->where('status', 1)
             ->where('created_at', '>=', $start)
             ->get()
-            ->groupBy(function ($item) {
-                return $item->created_at->format('Y-m');
-            });
+            ->groupBy(fn($item) => $item->created_at->format('Y-m'));
 
-        $enabledCounts = [];
-        $enabledNames  = [];
+        $enabledCompanyCounts = [];
+        $enabledCompanyNames  = [];
         foreach ($monthKeys as $key) {
-            $enabledCounts[] = isset($enabledRows[$key]) ? $enabledRows[$key]->count() : 0;
-            $enabledNames[]  = isset($enabledRows[$key]) ? $enabledRows[$key]->pluck('name')->toArray() : [];
+            $enabledCompanyCounts[] = isset($enabledCompanyRows[$key]) ? $enabledCompanyRows[$key]->count() : 0;
+            $enabledCompanyNames[]  = isset($enabledCompanyRows[$key]) ? $enabledCompanyRows[$key]->pluck('name')->toArray() : [];
         }
 
-        // Disabled Companies counts + names per month
-        $disabledRows = User::role('Company-admin')
+        // Disabled Companies
+        $disabledCompanyRows = User::role('Company-admin')
             ->where('status', 0)
             ->where('created_at', '>=', $start)
             ->get()
-            ->groupBy(function ($item) {
-                return $item->created_at->format('Y-m');
-            });
+            ->groupBy(fn($item) => $item->created_at->format('Y-m'));
 
-        $disabledCounts = [];
-        $disabledNames  = [];
+        $disabledCompanyCounts = [];
+        $disabledCompanyNames  = [];
         foreach ($monthKeys as $key) {
-            $disabledCounts[] = isset($disabledRows[$key]) ? $disabledRows[$key]->count() : 0;
-            $disabledNames[]  = isset($disabledRows[$key]) ? $disabledRows[$key]->pluck('name')->toArray() : [];
+            $disabledCompanyCounts[] = isset($disabledCompanyRows[$key]) ? $disabledCompanyRows[$key]->count() : 0;
+            $disabledCompanyNames[]  = isset($disabledCompanyRows[$key]) ? $disabledCompanyRows[$key]->pluck('name')->toArray() : [];
         }
 
-        // POS Machines counts per month
+        /** --------------------------
+         *  USER DATA
+         * -------------------------- */
+        // Enabled Users
+        $enabledUserRows = User::role('User')
+            ->where('status', 1)
+            ->where('created_at', '>=', $start)
+            ->get()
+            ->groupBy(fn($item) => $item->created_at->format('Y-m'));
+
+        $enabledUserCounts = [];
+        $enabledUserNames  = [];
+        foreach ($monthKeys as $key) {
+            $enabledUserCounts[] = isset($enabledUserRows[$key]) ? $enabledUserRows[$key]->count() : 0;
+            $enabledUserNames[]  = isset($enabledUserRows[$key]) ? $enabledUserRows[$key]->pluck('name')->toArray() : [];
+        }
+
+        // Disabled Users
+        $disabledUserRows = User::role('User')
+            ->where('status', 0)
+            ->where('created_at', '>=', $start)
+            ->get()
+            ->groupBy(fn($item) => $item->created_at->format('Y-m'));
+
+        $disabledUserCounts = [];
+        $disabledUserNames  = [];
+        foreach ($monthKeys as $key) {
+            $disabledUserCounts[] = isset($disabledUserRows[$key]) ? $disabledUserRows[$key]->count() : 0;
+            $disabledUserNames[]  = isset($disabledUserRows[$key]) ? $disabledUserRows[$key]->pluck('name')->toArray() : [];
+        }
+
+        /** --------------------------
+         *  POS MACHINES
+         * -------------------------- */
         $posMachineCounts = [];
-        foreach ($monthKeys as $key) {
-            [$year, $month] = explode('-', $key);
-            $count          = PosMachine::whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->count();
-            $posMachineCounts[] = $count;
-        }
-
-        // <<< MINIMAL ADDITION: ensure $posNames exists so view won't error.
-        // We keep it empty arrays so your existing view logic can handle no-pos-names gracefully.
-        $posNames = [];
+        $posNames         = [];
         foreach ($monthKeys as $key) {
             [$year, $month] = explode('-', $key);
 
-            // Fetch all POS Machines created in that month
             $posMachines = PosMachine::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->get();
 
-                                                                  // Store their names/IDs for that month
-             $posNames[] = $posMachines->pluck('serial_number')->toArray();  // replace 'name' with actual column
+            $posMachineCounts[] = $posMachines->count();
+            $posNames[]         = $posMachines->pluck('serial_number')->toArray();
         }
 
-        // Subscriptions with related company devices
+        /** --------------------------
+         *  LICENSE DATA
+         * -------------------------- */
         $license = Subscription::with(['subcreatedcompany.devices'])->get();
 
         return view('super-admin.dashboard', compact(
             'company',
             'months',
-            'enabledCounts',
-            'disabledCounts',
+            'enabledCompanyCounts',
+            'disabledCompanyCounts',
+            'enabledUserCounts',
+            'disabledUserCounts',
             'posMachineCounts',
-            'enabledNames',
-            'disabledNames',
-            'posNames', 
+            'enabledCompanyNames',
+            'disabledCompanyNames',
+            'enabledUserNames',
+            'disabledUserNames',
+            'posNames',
             'license'
         ));
     }

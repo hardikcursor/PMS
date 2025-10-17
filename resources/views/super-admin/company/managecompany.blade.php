@@ -33,6 +33,7 @@
                                             <th class="sortable" data-field="cEmail">EMAIL </th>
                                             <th class="sortable" data-field="subscriptionName">SUBSCRIPTION </th>
                                             <th class="sortable" data-field="licenseKey">LICENSE VALIDITY </th>
+                                            <th class="sortable" data-field="role">ROLE</th>
                                             <th class="sortable" data-field="status">STATUS </th>
 
                                             <th>ACTIONS</th>
@@ -61,7 +62,7 @@
                                                 </td>
 
                                                 <td>{{ $company->license->license_validity ?? 'N/A' }}</td>
-
+                                                <td>{{ $company->role }}</td>
                                                 <td>
                                                     @if ($company->status)
                                                         <button class="btn btn-sm btn-success changestatus"
