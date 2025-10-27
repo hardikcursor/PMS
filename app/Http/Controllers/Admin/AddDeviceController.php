@@ -28,7 +28,7 @@ class AddDeviceController extends Controller
             'AndroidId' => 'nullable|string|max:255',
         ]);
 
-        // Create the new POS user
+       
         $posUser                = new PosMachine();
         $posUser->company_id    = $request->Cname;
         $posUser->serial_number = $request->Srnumber;
@@ -67,7 +67,7 @@ class AddDeviceController extends Controller
             'AndroidId' => 'nullable|string|max:255',
         ]);
 
-        // Find the existing POS user
+       
         $posUser                = PosMachine::findOrFail($id);
         $posUser->company_id    = $request->Cname;
         $posUser->serial_number = $request->Srnumber;

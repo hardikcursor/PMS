@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -44,45 +45,51 @@ class AuthController extends Controller
     // }
 
     public function dologin(Request $request)
-{
-    $request->validate([
-        'username' => 'required|string',
-        'password' => 'required|string|min:6',
-    ], [
-        'username.required' => 'The username is required.',
-        'password.required' => 'The password is required.',
-        'password.min'      => 'The password must be at least 6 characters.',
-    ]);
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string|min:6',
+        ], [
+            'username.required' => 'The username is required.',
+            'password.required' => 'The password is required.',
+            'password.min'      => 'The password must be at least 6 characters.',
+        ]);
 
-    if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-        $user = Auth::user();
+       
+        $user = User::where('username', $request->username)->first();
 
-        // ✅ Check if role is Company-admin or User AND status = 1
-        if ($user->hasAnyRole(['Company-admin', 'User'])) {
-            if ($user->status == 1) {
-                // ✅ Allow login based on role
-                if ($user->hasRole('Company-admin')) {
-                    return redirect()->route('admin.dashboard');
-                } elseif ($user->hasRole('User')) {
-                    return redirect()->route('user.dashboard');
-                }
-            } else {
-                // ❌ Status inactive
-                Auth::logout();
-                return back()->with('error', 'Your account is inactive. Please contact the administrator.');
-            }
-        } elseif ($user->hasRole('Super-admin')) {
-            // ✅ Super-admin always allowed
-            return redirect()->route('superadmin.dashboard');
-        } else {
-            // ❌ Any other roles
-            Auth::logout();
-            return back()->with('error', 'You are not authorized to log in.');
+        if (! $user) {
+            return back()
+                ->with('error', 'Username not found. Please check and try again.');
         }
+
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
+            $user = Auth::user();
+
+            if ($user->hasAnyRole(['Company-admin', 'User'])) {
+                if ($user->status == 1) {
+                    if ($user->hasRole('Company-admin')) {
+                        return redirect()->route('admin.dashboard');
+                    } elseif ($user->hasRole('User')) {
+                        return redirect()->route('user.dashboard');
+                    }
+                } else {
+                    Auth::logout();
+                    return back()
+                        ->with('error', 'Your account is inactive. Please contact the administrator.')
+                        ->withInput();
+                }
+            } elseif ($user->hasRole('Super-admin')) {
+                return redirect()->route('superadmin.dashboard');
+            } else {
+                Auth::logout();
+                return back()
+                    ->with('error', 'You are not authorized to log in.')
+                    ->withInput();
+            }
+        }
+        return back()
+            ->with('error', 'Incorrect password. Please try again.')
+            ->withInput();
     }
-
-    // ❌ Invalid credentials
-    return back()->with('error', 'Incorrect Username or Password. Please try again.');
-}
-
 }

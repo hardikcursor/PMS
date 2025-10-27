@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -105,13 +106,15 @@ class ReportController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'bill_no'       => 'required|string|max:255',
-            'vehicle_id'  => 'integer|exists:vehicles,id',
+            'vehicle_id'    => 'integer|exists:vehicles,id',
+            'vehicle_no'    => 'required|string|max:255',
             'duration_type' => 'required|string|max:255',
             'in_time'       => 'required|date_format:H:i',
             'out_time'      => 'required|date_format:H:i',
             'date'          => 'required|date',
             'amount'        => 'required|numeric',
             'serial_number' => 'required|string',
+            'name' => 'required|string', 
         ]);
 
         if ($validator->fails()) {
@@ -122,7 +125,6 @@ class ReportController extends Controller
             ], 422);
         }
 
-       
         $machine = PosMachine::where('serial_number', $request->serial_number)
             ->where('status', 1)
             ->first();
@@ -134,31 +136,39 @@ class ReportController extends Controller
             ], 403);
         }
 
-      
+        
+        $posUser = PosUser::where('name', $request->name)->first();
+
+        if (! $posUser) {
+            return response()->json([
+                'status' => false,
+                'message' => 'POS user not found.',
+            ], 404);
+        }
+
+     
         $data = $request->only([
-            'bill_no', 'vehicle_no', 'vehicle_id', 'duration_type',
-            'in_time', 'out_time', 'date', 'amount', 'serial_number',
+            'bill_no',
+            'vehicle_no',
+            'vehicle_id',
+            'duration_type',
+            'in_time',
+            'out_time',
+            'date',
+            'amount',
+            'serial_number',
+            'name',
         ]);
-        $data['company_id'] = $machine->company_id ?? null;
+
+        $data['company_id']   = $machine->company_id ?? null;
+        $data['pos_user_id']  = $posUser->id ?? null;
 
         $entry = Report::create($data);
 
         return response()->json([
             'status'  => true,
             'message' => 'Report saved successfully',
-            'data'    => [
-                'id'            => $entry->id,
-                'bill_no'       => $entry->bill_no,
-                'vehicle_no'    => $entry->vehicle_no,
-                'vehicle_id'    => $entry->vehicle_id,
-                'duration_type' => $entry->duration_type,
-                'in_time'       => $entry->in_time,
-                'out_time'      => $entry->out_time,
-                'date'          => $entry->date,
-                'amount'        => $entry->amount,
-                'serial_number' => $entry->serial_number,
-                'company_id'    => $entry->company_id,
-            ],
+            'data'    => $entry,
         ], 201);
     }
 
@@ -210,5 +220,4 @@ class ReportController extends Controller
             'data'    => $entries,
         ], 200);
     }
-
 }

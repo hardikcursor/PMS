@@ -134,6 +134,8 @@ Route::prefix('company-admin')->group(function () {
 });
 
 Route::prefix('user')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'index'])->name('user.dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'dashboard'])->name('user.dashboard');
+    Route::get('/total-revenue', [\App\Http\Controllers\User\DashboardController::class, 'getTotalRevenue'])->name('total.revenue');
+    Route::get('/today-collection', [\App\Http\Controllers\User\DashboardController::class, 'todayUserCollections'])->name('reports.today.collection');
     Route::get('/logout', [\App\Http\Controllers\User\DashboardController::class, 'logout'])->name('user.logout');
 });

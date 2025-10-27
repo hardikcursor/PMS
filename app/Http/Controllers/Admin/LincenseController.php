@@ -30,7 +30,7 @@ class LincenseController extends Controller
             'license_validity' => 'required|date',
         ]);
 
-        // Save subscription
+       
         $subscription             = new Subscription();
         $subscription->company_id = $request->Company;
         $subscription->name       = $request->SubscriptionName;
@@ -38,7 +38,7 @@ class LincenseController extends Controller
         $subscription->duration   = $request->license_validity;
         $subscription->save();
 
-        // 🔹 Update user status = 1 automatically
+      
         $user = User::find($request->Company);
         if ($user) {
             $user->status = 1;

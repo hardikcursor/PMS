@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -28,7 +29,7 @@ class CompanyController extends Controller
             }
         }
 
-        $company      = User::with('license', 'subscriptionprice')->role(['Company-admin','User'])->get();
+        $company      = User::with('license', 'subscriptionprice')->role(['Company-admin', 'User'])->get();
         $companyCount = $company->count();
 
         return view('super-admin.company.managecompany', compact('company', 'companyCount'));
@@ -82,7 +83,7 @@ class CompanyController extends Controller
         $user->position = "admin";
         $user->role     = $request->role;
 
-       
+
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
             $filename = time() . '_' . $image->getClientOriginalName();
@@ -92,7 +93,7 @@ class CompanyController extends Controller
 
         $user->save();
 
-       
+
         if ($user->role === 'admin') {
             $user->assignRole('Company-admin');
         } elseif ($user->role === 'user') {
@@ -146,7 +147,7 @@ class CompanyController extends Controller
 
     public function edit($id)
     {
-        // Load company with all related info
+       
         $company = User::with(['license', 'header', 'footer', 'gstInfo', 'accountInfo'])->findOrFail($id);
 
         return view('super-admin.company.edit', compact('company'));
@@ -191,7 +192,7 @@ class CompanyController extends Controller
         $company->email           = $request->email;
         $company->android_version = $request->android_version;
         $company->position        = 'admin';
-        // Upload logo
+       
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
             $filename = time() . '_' . $image->getClientOriginalName();
@@ -279,14 +280,13 @@ class CompanyController extends Controller
 
     public function activate()
     {
-        $active = User::with('subscriptionprice')->role('Company-admin')->where('status', 1)->get();
+        $active = User::with('subscriptionprice')->role(['Company-admin','User'])->where('status', 1)->get();
         return view('super-admin.company.active', compact('active'));
     }
 
     public function inactive()
     {
-        $inactive = User::with('subscriptionprice')->role('Company-admin')->where('status', 0)->get();
+        $inactive = User::with('subscriptionprice')->role(['Company-admin','User'])->where('status', 0)->get();
         return view('super-admin.company.inactive', compact('inactive'));
     }
-
 }

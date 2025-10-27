@@ -84,7 +84,7 @@ class PosUserController extends Controller
                 ->with('success', 'POS User updated successfully.');
 
         } catch (\Illuminate\Database\QueryException $ex) {
-            if ($ex->errorInfo[1] == 1062) { // Duplicate entry MySQL error code
+            if ($ex->errorInfo[1] == 1062) { 
                 return back()->with('error', '⚠️ This Login ID already exists. Please choose another one.')
                     ->withInput();
             }

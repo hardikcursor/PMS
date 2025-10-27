@@ -118,7 +118,7 @@ class HeaderFooterController extends Controller
     $lng = $request->lng;
     $address = null;
 
-    // 1️⃣ Google Maps API
+   
     $googleKey = env('GOOGLE_MAPS_API_KEY');
     if ($googleKey) {
         $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json", [
@@ -136,7 +136,7 @@ class HeaderFooterController extends Controller
         }
     }
 
-    // 2️⃣ Fallback: OpenStreetMap
+    
     if (!$address) {
         $osm = Http::get("https://nominatim.openstreetmap.org/reverse", [
             'lat' => $lat,
@@ -147,12 +147,12 @@ class HeaderFooterController extends Controller
         $address = $osm['display_name'] ?? null;
     }
 
-    // 3️⃣ Default if nothing found
+    
     if (!$address) {
         $address = "Lat: $lat, Lng: $lng";
     }
 
-    // 4️⃣ Save to database
+    
     $location = Location::updateOrCreate(
         ['lat' => $lat, 'lng' => $lng],
         ['address' => $address]

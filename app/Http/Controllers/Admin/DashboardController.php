@@ -63,12 +63,12 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // Company data
+       
         $company = User::with('license', 'setsubscriptionprice')
             ->role('Company-admin')
             ->get();
 
-        // Last 12 months
+        
         $start     = Carbon::now()->startOfMonth()->subMonths(11);
         $months    = [];
         $monthKeys = [];
@@ -79,10 +79,7 @@ class DashboardController extends Controller
             $monthKeys[] = $dt->format('Y-m');
         }
 
-        /** --------------------------
-         *  COMPANY ADMIN DATA
-         * -------------------------- */
-        // Enabled Companies
+       
         $enabledCompanyRows = User::role('Company-admin')
             ->where('status', 1)
             ->where('created_at', '>=', $start)
@@ -96,7 +93,7 @@ class DashboardController extends Controller
             $enabledCompanyNames[]  = isset($enabledCompanyRows[$key]) ? $enabledCompanyRows[$key]->pluck('name')->toArray() : [];
         }
 
-        // Disabled Companies
+       
         $disabledCompanyRows = User::role('Company-admin')
             ->where('status', 0)
             ->where('created_at', '>=', $start)
@@ -110,10 +107,7 @@ class DashboardController extends Controller
             $disabledCompanyNames[]  = isset($disabledCompanyRows[$key]) ? $disabledCompanyRows[$key]->pluck('name')->toArray() : [];
         }
 
-        /** --------------------------
-         *  USER DATA
-         * -------------------------- */
-        // Enabled Users
+    
         $enabledUserRows = User::role('User')
             ->where('status', 1)
             ->where('created_at', '>=', $start)
@@ -127,7 +121,7 @@ class DashboardController extends Controller
             $enabledUserNames[]  = isset($enabledUserRows[$key]) ? $enabledUserRows[$key]->pluck('name')->toArray() : [];
         }
 
-        // Disabled Users
+       
         $disabledUserRows = User::role('User')
             ->where('status', 0)
             ->where('created_at', '>=', $start)
@@ -141,9 +135,7 @@ class DashboardController extends Controller
             $disabledUserNames[]  = isset($disabledUserRows[$key]) ? $disabledUserRows[$key]->pluck('name')->toArray() : [];
         }
 
-        /** --------------------------
-         *  POS MACHINES
-         * -------------------------- */
+     
         $posMachineCounts = [];
         $posNames         = [];
         foreach ($monthKeys as $key) {
@@ -157,9 +149,7 @@ class DashboardController extends Controller
             $posNames[]         = $posMachines->pluck('serial_number')->toArray();
         }
 
-        /** --------------------------
-         *  LICENSE DATA
-         * -------------------------- */
+   
         $license = Subscription::with(['subcreatedcompany.devices'])->get();
 
         return view('super-admin.dashboard', compact(

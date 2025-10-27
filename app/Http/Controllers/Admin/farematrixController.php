@@ -44,7 +44,7 @@ class farematrixController extends Controller
                 'string',
                 'max:255',
                 function ($attribute, $value, $fail) {
-                    // Check if all characters are uppercase
+                  
                     if (! preg_match('/^[A-Z\s]+$/', $value)) {
                         $fail('The vehicle category must be in all capital letters.');
                     }
@@ -66,7 +66,7 @@ class farematrixController extends Controller
     public function editvehicle($id)
     {
         $vehicle = Vehicle::findOrFail($id);
-        return response()->json($vehicle); // Return JSON for modal pre-fill
+        return response()->json($vehicle); 
     }
 
     public function updatevehicle(Request $request, $id)
@@ -116,7 +116,7 @@ class farematrixController extends Controller
             foreach ($request->rate as $slotId => $rates) {
                 $rate = $rates[$vehicleIndex] ?? 0;
 
-                // ✅ Duplicate check
+               
                 $exists = Fare_metrix::where('user_id', $companyId)
                     ->where('vehicle_category_id', $vehicleCategoryId)
                     ->where('slot_id', $slotId)
