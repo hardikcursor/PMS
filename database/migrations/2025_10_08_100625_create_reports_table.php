@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('pos_user_id')->constrained('pos_users')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('name');
             $table->string('serial_number');
             $table->string('bill_no');
             $table->string('vehicle_no')->nullable();
