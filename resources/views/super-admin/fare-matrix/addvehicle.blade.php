@@ -19,6 +19,24 @@
                         <h4 class="card-title mb-4">Add Vehicle Category</h4>
                         <form action="{{ route('superadmin.faremetrix.addvehicle') }}" method="POST">
                             @csrf
+
+                            <div class="row mb-4">
+                                <label for="company_category" class="col-sm-3 col-form-label">Company</label>
+
+                                <div class="col-sm-9">
+
+                                    <select name="company_category" id="company_category"
+                                        class="form-select @error('company_category') is-invalid @enderror">
+                                        <option value="">Select Company</option>
+                                        @foreach ($companyCategories as $company)
+                                            <option value="{{ $company->id }}" {{ old('company_category') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('company_category')
+                                        <span class="text-danger small">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
                             <div class="row mb-4">
                                 <label for="vehicle_category" class="col-sm-3 col-form-label">Vehicle Category</label>
                                 <div class="col-sm-9">

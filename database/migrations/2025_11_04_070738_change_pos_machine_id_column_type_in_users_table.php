@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicles', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('company_id');
-            $table->foreign('company_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('vehicle_type');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+                $table->dropForeign(['pos_machine_id']);
+                 $table->json('pos_machine_id')->nullable()->change();
         });
     }
 
@@ -25,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vehicles');
+        Schema::table('users', function (Blueprint $table) {
+                $table->unsignedBigInteger('pos_machine_id')->nullable()->change();
+        });
     }
 };

@@ -339,20 +339,20 @@
     @section('scripts')
         <script src="{{ asset('admin_assets/libs/jquery-steps/build/jquery.steps.min.js') }}"></script>
         <script>
-            // Initialize jQuery Steps
+          
             $("#basic-example").steps({
                 headerTag: "h3",
                 bodyTag: "section",
                 transitionEffect: "slideLeft",
                 autoFocus: true,
                 onStepChanging: function(event, currentIndex, newIndex) {
-                    // Always allow going backward
+              
                     if (currentIndex > newIndex) {
                         return true;
                     }
-                    // Validate current step fields
+                   
                     let form = $("#companyForm");
-                    if (currentIndex === 0) { // Company Details validation
+                    if (currentIndex === 0) { 
                         let valid = true;
                         form.find(
                             'input[name="agency_name"], input[name="phone_no"], input[name="email"], input[name="password"], textarea[name="address"]'
@@ -366,7 +366,7 @@
                         });
                         return valid;
                     }
-                    if (currentIndex === 1) { // License Details validation
+                    if (currentIndex === 1) { 
                         let valid = true;
                         form.find('input[name="license_key"], input[name="license_validity"]').each(function() {
                             if (!$(this).val()) {
@@ -378,7 +378,7 @@
                         });
                         return valid;
                     }
-                    if (currentIndex === 2) { // Header Details validation
+                    if (currentIndex === 2) { 
                         let valid = true;
                         form.find(
                             'input[name="header1"], input[name="header2"], input[name="header3"], input[name="footer1"], input[name="footer2"], input[name="footer3"],input[name="footer4"]'
@@ -395,7 +395,7 @@
                     return true;
                 },
                 onFinishing: function(event, currentIndex) {
-                    // Final validation if needed
+                    
                     return true;
                 },
                 onFinished: function(event, currentIndex) {
@@ -403,7 +403,7 @@
                 }
             });
 
-            // License key generator
+          
             function generateLicense() {
                 const input = document.getElementById("licenseKeyInput");
                 if (!input.value) {

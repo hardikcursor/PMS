@@ -98,20 +98,18 @@
 
             viewBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // attributes read karo
+              
                     const id = this.getAttribute('data-id');
                     const name = this.getAttribute('data-name');
                     const price = this.getAttribute('data-price');
                     const duration = this.getAttribute('data-duration');
                     const company = this.getAttribute('data-company');
 
-                    // modal fields ma set karo
                     document.getElementById('modalCompanyName').innerText = company;
                     document.getElementById('modalLicenceName').innerText = name;
                     document.getElementById('modalLicencePrice').innerText = "₹ " + price;
                     document.getElementById('modalLicenceDuration').innerText = duration;
 
-                    // Edit Button link set karvo hoy to
                     document.getElementById('modalEditBtn').setAttribute('href',
                         '/subscriptions/edit/' + id);
                 });

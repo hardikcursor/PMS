@@ -129,9 +129,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set licence name
         subscriptionNameField.value = licenseKey || '';
 
-        // Format validity date if needed
+     
         if (validity) {
-            // Convert dd/mm/yyyy or other formats to yyyy-mm-dd for input[type=date]
+        
             if (validity.includes('/')) {
                 const parts = validity.split('/');
                 validity = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;

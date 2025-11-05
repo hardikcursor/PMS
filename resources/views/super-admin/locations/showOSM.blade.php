@@ -8,7 +8,7 @@
     <div id="map" style="height: 500px;"></div>
 </div>
 
-<!-- Leaflet.js -->
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -17,19 +17,19 @@
     var lng = {{ $location->lng }};
     var address = @json($location->address);
 
-    // Initialize map
+
     var map = L.map('map').setView([lat, lng], 16);
 
-    // OpenStreetMap tiles (free, no key required)
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Marker
+ 
     var marker = L.marker([lat, lng]).addTo(map);
 
-    // ✅ If no address in DB, fetch from Nominatim
+  
     if (!address || address.trim() === "") {
         fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
             .then(response => response.json())

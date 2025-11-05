@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PosMachine;
 use App\Models\PosUser;
 use App\Models\Report;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -106,15 +106,14 @@ class ReportController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'bill_no'       => 'required|string|max:255',
-            'vehicle_id'    => 'integer|exists:vehicles,id',
-            'vehicle_no'    => 'required|string|max:255',
+            'vehicle_type'  => 'required|string|max:255',
             'duration_type' => 'required|string|max:255',
             'in_time'       => 'required|date_format:H:i',
             'out_time'      => 'required|date_format:H:i',
             'date'          => 'required|date',
             'amount'        => 'required|numeric',
             'serial_number' => 'required|string',
-            'name' => 'required|string', 
+            'name'          => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -136,21 +135,28 @@ class ReportController extends Controller
             ], 403);
         }
 
-        
         $posUser = PosUser::where('name', $request->name)->first();
 
         if (! $posUser) {
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'POS user not found.',
             ], 404);
         }
 
-     
+        $vehicle = Vehicle::where('vehicle_type', $request->vehicle_type)->first();
+
+        if (! $vehicle) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Vehicle not found.',
+            ], 404);
+        }
+
         $data = $request->only([
             'bill_no',
             'vehicle_no',
-            'vehicle_id',
+            'vehicle_type',
             'duration_type',
             'in_time',
             'out_time',
@@ -160,8 +166,9 @@ class ReportController extends Controller
             'name',
         ]);
 
-        $data['company_id']   = $machine->company_id ?? null;
-        $data['pos_user_id']  = $posUser->id ?? null;
+        $data['company_id']  = $machine->company_id ?? null;
+        $data['pos_user_id'] = $posUser->id ?? null;
+        $data['vehicle_id']  = $vehicle->id ?? null;
 
         $entry = Report::create($data);
 
@@ -207,10 +214,7 @@ class ReportController extends Controller
                     'out_time'      => $entry->out_time,
                     'date'          => $entry->date,
                     'amount'        => $entry->amount,
-                    'pos_user_id'   => $entry->pos_user_id,
                     'serial_number' => $entry->serial_number,
-                    'created_at'    => $entry->created_at,
-                    'updated_at'    => $entry->updated_at,
                 ];
             });
 
@@ -220,4 +224,5 @@ class ReportController extends Controller
             'data'    => $entries,
         ], 200);
     }
+
 }

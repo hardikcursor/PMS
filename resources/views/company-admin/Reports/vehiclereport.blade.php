@@ -47,13 +47,13 @@
                                                 <td class="text-center">{{ $reports->out_time }}</td>
                                                 <td class="text-center">{{ number_format($reports->amount, 2) }}</td>
                                             </tr>
-                                            @php
-                                                $grandTotal += $reports->amount;
-                                            @endphp
-                                        @endforeach
+                                                @php
+                                                    $grandTotal += $reports->amount;
+                                                @endphp
+                                            @endforeach
                                     </tbody>
 
-                                    {{-- ✅ Grand Total Row (label under SR NO, amount under AMOUNT) --}}
+                                   
                                     <tfoot>
                                         <tr style="background-color:#e8f5e9; font-weight:bold;">
                                             <td class="text-center">Grand Total:</td>

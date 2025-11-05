@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers\User;
 
-use Carbon\Carbon;
-use App\Models\Report;
-use App\Models\Vehicle;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Vehicle;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-
     public function dashboard()
     {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
         $userId = auth()->user()->id;
 
-
         $vehiclesByType = Vehicle::select('id', 'vehicle_type')->get()->groupBy('vehicle_type');
-        $collections = Report::get();
+
+        $todayStart = now()->startOfDay();
+        $todayEnd   = now()->endOfDay();
 
         $totals = [
             'Cycle'          => 0,
@@ -32,43 +35,51 @@ class DashboardController extends Controller
             $totals['Cycle'] = DB::table('reports')
                 ->where('company_id', $userId)
                 ->whereIn('vehicle_id', $cycleIds)
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
                 ->sum('amount');
         } else {
             $cycleIds = [];
         }
-        $bikeIds = isset($vehiclesByType['BIKE'])
-            ? $vehiclesByType['BIKE']->pluck('id')->toArray()
-            : [];
-        $scooterIds = isset($vehiclesByType['SCOOTER'])
-            ? $vehiclesByType['SCOOTER']->pluck('id')->toArray()
-            : [];
 
-        $bikeAndScooterIds = array_merge($bikeIds, $scooterIds);
+        $bikeIds     = isset($vehiclesByType['BIKE']) ? $vehiclesByType['BIKE']->pluck('id')->toArray() : [];
+        $scooterIds  = isset($vehiclesByType['SCOOTER']) ? $vehiclesByType['SCOOTER']->pluck('id')->toArray() : [];
+        $bikeScooter = array_merge($bikeIds, $scooterIds);
 
-        if (!empty($bikeAndScooterIds)) {
-            $totals['BikeAndScooter'] = DB::table('reports')
+        if (!empty($bikeScooter)) {
+            $totals['Bike'] = DB::table('reports')
                 ->where('company_id', $userId)
-                ->whereIn('vehicle_id', $bikeAndScooterIds)
+                ->whereIn('vehicle_id', $bikeScooter)
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
                 ->sum('amount');
         }
-        if (isset($vehiclesByType['FOURWHEEL']) || isset($vehiclesByType['CAR'])) {
+
+        if (isset($vehiclesByType['Four Wheeler']) || isset($vehiclesByType['CAR'])) {
             $fourIds = collect()
-                ->merge($vehiclesByType['FOURWHEEL'] ?? collect())
+                ->merge($vehiclesByType['Four Wheeler'] ?? collect())
                 ->merge($vehiclesByType['CAR'] ?? collect())
                 ->pluck('id')
                 ->toArray();
 
-            $totals['FourWheeler'] = DB::table('reports')
+            $totals['Four Wheeler'] = DB::table('reports')
                 ->where('company_id', $userId)
                 ->whereIn('vehicle_id', $fourIds)
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
                 ->sum('amount');
         } else {
             $fourIds = [];
         }
-        $allKnownIds = array_merge($cycleIds, $bikeAndScooterIds, $fourIds);
-        $totals['CVehicle'] = DB::table('reports')
+
+        $allKnownIds = array_merge($cycleIds, $bikeScooter, $fourIds);
+
+        $totals['Comm Vehicle'] = DB::table('reports')
             ->where('company_id', $userId)
             ->whereNotIn('vehicle_id', $allKnownIds)
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
+            ->sum('amount');
+
+        $todayTotal = DB::table('reports')
+            ->where('company_id', $userId)
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
             ->sum('amount');
 
         $fromDate = now()->subDays(2)->startOfDay();
@@ -88,8 +99,7 @@ class DashboardController extends Controller
             ->orderBy(DB::raw('DATE(created_at)'), 'desc')
             ->get();
 
-        $sevenDaysAgo = now()->subDays(6)->startOfDay(); // last 7 days including today
-
+        $sevenDaysAgo = now()->subDays(6)->startOfDay();
         $last7DaysCollections = DB::table('reports')
             ->select(
                 DB::raw('DATE(created_at) as date'),
@@ -99,25 +109,52 @@ class DashboardController extends Controller
             ->where('created_at', '>=', $sevenDaysAgo)
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy(DB::raw('DATE(created_at)'), 'asc')
-            ->pluck('total_vehicle', 'date'); 
+            ->pluck('total_vehicle', 'date');
 
-        return view('User.dashboard', compact('totals', 'collections', 'todayCollections','last7DaysCollections'));
+        $startDate = Carbon::now()->subDays(5)->startOfDay();
+        $endDate   = Carbon::now()->endOfDay();
+
+        $collectionsByDay = DB::table('reports')
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(amount) as total_amount')
+            )
+            ->where('company_id', $userId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy(DB::raw('DATE(created_at)'), 'desc')
+            ->get();
+
+        $labels  = [];
+        $amounts = [];
+
+        $period = new \DatePeriod($startDate, new \DateInterval('P1D'), $endDate->copy()->addDay());
+        foreach ($period as $date) {
+            $formattedDate = $date->format('Y-m-d');
+            $labels[]      = $date->format('d M');
+            $amounts[]     = (float) ($collectionsByDay->firstWhere('date', $formattedDate)->total_amount ?? 0);
+        }
+
+        return view('User.dashboard', compact(
+            'totals',
+            'todayTotal',
+            'todayCollections',
+            'last7DaysCollections',
+            'labels',
+            'amounts'
+        ));
     }
-
 
     public function getTotalRevenue()
     {
-        $total = DB::table('reports')->sum('amount');
+        $today = now()->toDateString();
+        $total = \App\Models\Report::whereDate('created_at', $today)
+            ->sum('amount');
 
         return response()->json([
-            'status' => true,
             'total_revenue' => $total,
         ]);
     }
-
-    public function todayUserCollections() {}
-
-
 
     public function logout()
     {

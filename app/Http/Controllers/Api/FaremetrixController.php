@@ -19,7 +19,7 @@ class FaremetrixController extends Controller
         $username = $request->input('username');
 
 
-        $user = User::where('name', $username)->first();
+        $user = User::where('username', $username)->first();
 
         if (!$user) {
             return response()->json([
@@ -40,9 +40,6 @@ class FaremetrixController extends Controller
             ], 404);
         }
 
-        // $result = [
-        //     'user' => $user->name,
-        // ];
 
         foreach ($fare_matrix as $fare) {
             $category = $fare->vehicleCategory?->vehicle_type ?? 'Unknown';

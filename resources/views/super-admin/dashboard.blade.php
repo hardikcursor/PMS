@@ -39,8 +39,8 @@
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="avatar-md profile-user-wid mb-4">
-                                            <img src="{{ asset('admin_assets/images/users/avatar-1.jpg') }}" alt=""
-                                                class="img-thumbnail rounded-circle">
+                                            <img src="{{ asset('admin_assets/images/Cursor_LOGO.png') }}"
+                                                alt="" class="img-thumbnail rounded-circle">
                                         </div>
 
                                     </div>
@@ -106,7 +106,7 @@
                                 <div class="card mini-stats-wid">
                                     <div class="card-body">
                                         <div class="d-flex">
-                                            <div class="flex-grow-1">
+                                            <div class="flex-grow-1  mb-3">
                                                 <p class="text-muted fw-medium">Active Agencies</p>
                                                 <h4 class="mb-0">{{ $company->where('status', 1)->count() }}</h4>
                                             </div>

@@ -25,7 +25,7 @@
                     <div class="col-lg-12">
 
                         <div class="card shadow-sm border-0">
-                        
+
 
                             <div id="alertContainer" class="p-3">
                                 @if (session('success'))
@@ -75,20 +75,14 @@
                                                 <tr class="slot-row">
                                                     <td>
                                                         <select name="vehicle_category[]"
-                                                            class="form-select vehicle-select vehicle-select-dynamic"
-                                                            required>
+                                                            class="form-select vehicle-select vehicle-select-dynamic">
                                                             <option value="" selected disabled>Select Vehicle</option>
-                                                            @foreach ($vehicleCategories as $category)
-                                                                <option value="{{ $category->id }}">
-                                                                    {{ $category->vehicle_type }}</option>
-                                                            @endforeach
                                                         </select>
                                                     </td>
                                                     @foreach ($slots as $slot)
                                                         <td>
                                                             <input type="text" name="rate[{{ $slot->id }}][]"
-                                                                class="form-control form-control-sm text-center rate-input"
-                                                                required>
+                                                                class="form-control form-control-sm text-center rate-input">
                                                         </td>
                                                     @endforeach
                                                 </tr>
@@ -102,6 +96,7 @@
                                         </button>
                                     </div>
                                 </form>
+
                             </div>
                         </div> <!-- end card -->
 
@@ -112,10 +107,38 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const slotTableBody = document.getElementById('slotTableBody');
             const originalRow = slotTableBody.querySelector('.slot-row');
+
+            $('#company_category').on('change', function() {
+                const companyId = $(this).val();
+                if (!companyId) return;
+
+                $.ajax({
+                    url: "{{ route('superadmin.getCompanyVehicles', ':id') }}".replace(':id',
+                        companyId),
+                    method: 'GET',
+                    success: function(data) {
+                        const vehicleSelects = document.querySelectorAll(
+                            '.vehicle-select-dynamic');
+                        vehicleSelects.forEach(select => {
+                            select.innerHTML =
+                                '<option value="" selected disabled>Select Vehicle</option>';
+                            data.forEach(vehicle => {
+                                select.innerHTML +=
+                                    `<option value="${vehicle.id}">${vehicle.vehicle_type}</option>`;
+                            });
+                        });
+                    },
+                    error: function() {
+                        alert('Failed to load vehicles. Please try again.');
+                    }
+                });
+            });
 
             function updateDropdownOptions() {
                 const allSelects = slotTableBody.querySelectorAll('.vehicle-select-dynamic');
@@ -141,15 +164,17 @@
             function addNewRowIfNeeded(select) {
                 const rows = slotTableBody.querySelectorAll('.slot-row');
                 const lastRow = rows[rows.length - 1];
-                const options = Array.from(select.options).filter(o => o.value !== '');
-                const lastOptionValue = options[options.length - 1].value;
+                const selectedOption = select.options[select.selectedIndex];
+                const isLastOption = select.selectedIndex === select.options.length - 1; // 👈 check last option
 
-                if (select.closest('tr') === lastRow && select.value !== lastOptionValue) {
+             
+                if (select.closest('tr') === lastRow && select.value !== '' && !isLastOption) {
                     const newRow = originalRow.cloneNode(true);
                     newRow.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
                     newRow.querySelectorAll('input[type=text]').forEach(i => i.value = '');
                     slotTableBody.appendChild(newRow);
                 }
+
                 updateDropdownOptions();
             }
 
@@ -159,7 +184,18 @@
                 }
             });
 
-            updateDropdownOptions();
+            $('form').on('submit', function() {
+                $('.slot-row').each(function() {
+                    const vehicle = $(this).find('.vehicle-select-dynamic').val();
+                    const allInputsEmpty = $(this).find('.rate-input').filter(function() {
+                        return $(this).val().trim() !== '';
+                    }).length === 0;
+
+                    if (!vehicle || allInputsEmpty) {
+                        $(this).remove();
+                    }
+                });
+            });
         });
     </script>
 @endsection

@@ -17,7 +17,7 @@ class HeaderFooterController extends Controller
             'username' => 'required|string',
         ]);
 
-        $user = User::where('name', $request->username)->first();
+        $user = User::where('username', $request->username)->first();
 
         if (! $user) {
             return response()->json([
@@ -68,7 +68,6 @@ class HeaderFooterController extends Controller
 
     //     $address = null;
 
-    //     // 1️⃣ Try Google Maps API
     //     $googleKey = env('GOOGLE_MAPS_API_KEY');
     //     $googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$lat},{$lng}&key={$googleKey}&language=en&region=IN";
 
@@ -82,7 +81,7 @@ class HeaderFooterController extends Controller
     //         }
     //     }
 
-    //     // 2️⃣ Fallback to OpenStreetMap if Google fails
+
     //     if (! $address) {
     //         $osm = Http::get("https://nominatim.openstreetmap.org/reverse", [
     //             'lat'    => $lat,
@@ -93,7 +92,7 @@ class HeaderFooterController extends Controller
     //         $address = $osm['display_name'] ?? "Address not found";
     //     }
 
-    //     // 3️⃣ Save to database
+
     //     $location = Location::create([
     //         'lat'     => $lat,
     //         'lng'     => $lng,

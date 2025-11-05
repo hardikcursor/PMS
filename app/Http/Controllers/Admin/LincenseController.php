@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\License;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class LincenseController extends Controller
 
     public function create()
     {
-        $companies = User::role('company-admin')->get();
+        $companies = User::role(['company-admin', 'User'])->get();
         return view('super-admin.addlincense.create', compact('companies'));
     }
 
@@ -30,7 +31,6 @@ class LincenseController extends Controller
             'license_validity' => 'required|date',
         ]);
 
-       
         $subscription             = new Subscription();
         $subscription->company_id = $request->Company;
         $subscription->name       = $request->SubscriptionName;
@@ -38,11 +38,18 @@ class LincenseController extends Controller
         $subscription->duration   = $request->license_validity;
         $subscription->save();
 
-      
         $user = User::find($request->Company);
         if ($user) {
             $user->status = 1;
             $user->save();
+        }
+
+      
+        $license = \App\Models\License::where('user_id', $request->Company)->first();
+
+        if ($license) {
+            $license->license_validity = $request->license_validity;
+            $license->save();
         }
 
         return redirect()->route('superadmin.subscription.manage')
@@ -52,7 +59,7 @@ class LincenseController extends Controller
     public function edit($id)
     {
         $subscription = Subscription::findOrFail($id);
-        $companies    = User::role('company-admin')->get();
+        $companies    = User::role(['company-admin', 'User'])->get();
         return view('super-admin.addlincense.edit', compact('subscription', 'companies'));
     }
 
@@ -65,6 +72,7 @@ class LincenseController extends Controller
             'license_validity' => 'required|date',
         ]);
 
+     
         $subscription             = Subscription::findOrFail($id);
         $subscription->company_id = $request->Company;
         $subscription->name       = $request->SubscriptionName;
@@ -72,7 +80,17 @@ class LincenseController extends Controller
         $subscription->duration   = $request->license_validity;
         $subscription->save();
 
-        return redirect()->route('superadmin.subscription.manage')->with('success', 'Licence updated successfully');
+
+        $license = License::where('user_id', $request->Company)->first();
+
+        if ($license) {
+            $license->license_validity = $request->license_validity;
+            $license->save();
+        }
+
+        return redirect()
+            ->route('superadmin.subscription.manage')
+            ->with('success', 'Licence updated successfully & License table synced.');
     }
 
     public function destroy($id)

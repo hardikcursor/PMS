@@ -186,7 +186,7 @@
                     row.querySelector('.delete-row').classList.remove(
                         'd-none');
 
-                    // AJAX save
+                  
                     fetch("{{ route('admin.update.vehicle.rate') }}", {
                             method: 'POST',
                             headers: {

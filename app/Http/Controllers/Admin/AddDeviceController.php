@@ -16,9 +16,27 @@ class AddDeviceController extends Controller
     }
     public function create()
     {
-        $company = User::role(['company-admin','User'])->get();
+        $company = User::role(['company-admin', 'User'])->get();
         return view('super-admin.adddevices.create', compact('company'));
     }
+
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'Cname'     => 'required|exists:users,id',
+    //         'Srnumber'  => 'required|numeric',
+    //         'AndroidId' => 'nullable|string|max:255',
+    //     ]);
+
+    //     $posUser                = new PosMachine();
+    //     $posUser->company_id    = $request->Cname;
+    //     $posUser->serial_number = $request->Srnumber;
+    //     $posUser->android_id    = $request->AndroidId;
+    //     $posUser->status        = 1; // Default to active
+    //     $posUser->save();
+
+    //     return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device added successfully.');
+    // }
 
     public function store(Request $request)
     {
@@ -27,16 +45,24 @@ class AddDeviceController extends Controller
             'Srnumber'  => 'required|numeric',
             'AndroidId' => 'nullable|string|max:255',
         ]);
+        
+        $pos                = new PosMachine();
+        $pos->company_id    = $request->Cname;
+        $pos->serial_number = $request->Srnumber;
+        $pos->android_id    = $request->AndroidId;
+        $pos->status        = 1;
+        $pos->save();
 
-       
-        $posUser                = new PosMachine();
-        $posUser->company_id    = $request->Cname;
-        $posUser->serial_number = $request->Srnumber;
-        $posUser->android_id    = $request->AndroidId;
-        $posUser->status        = 1; // Default to active
-        $posUser->save();
+        $user = User::find($request->Cname);
 
-        return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device added successfully.');
+        $existingIds   = $user->pos_machine_id ? json_decode($user->pos_machine_id, true) : [];
+        $existingIds[] = $pos->id;
+        $existingIds   = array_unique($existingIds);
+
+        $user->pos_machine_id = json_encode($existingIds);
+        $user->save();
+
+        return redirect()->route('superadmin.adddevices.index')->with('success', 'POS device added and linked successfully.');
     }
 
     public function changestatus(Request $request)
@@ -67,7 +93,6 @@ class AddDeviceController extends Controller
             'AndroidId' => 'nullable|string|max:255',
         ]);
 
-       
         $posUser                = PosMachine::findOrFail($id);
         $posUser->company_id    = $request->Cname;
         $posUser->serial_number = $request->Srnumber;

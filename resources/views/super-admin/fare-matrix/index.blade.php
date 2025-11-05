@@ -160,7 +160,7 @@
                 }, 3000);
             }
 
-            // Edit row
+          
             document.querySelectorAll('.edit-row').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const row = this.closest('tr');
@@ -173,7 +173,7 @@
                 });
             });
 
-            // Cancel row
+        
             document.querySelectorAll('.cancel-row').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const row = this.closest('tr');
@@ -190,7 +190,7 @@
                 });
             });
 
-            // Save row
+     
             document.querySelectorAll('.save-row').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const row = this.closest('tr');
@@ -224,7 +224,7 @@
                     row.querySelector('.delete-row').classList.remove(
                     'd-none'); 
 
-                    // AJAX save
+               
                     fetch("{{ route('update.vehicle.rate') }}", {
                             method: 'POST',
                             headers: {
@@ -253,7 +253,7 @@
                 });
             });
 
-            // Delete row
+           
             document.querySelectorAll('.delete-row').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const row = this.closest('tr');

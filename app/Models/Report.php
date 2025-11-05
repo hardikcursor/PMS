@@ -8,19 +8,20 @@ class Report extends Model
     protected $fillable = [
         'bill_no',
         'vehicle_no',
-        'vehicle_id',
-        'pos_user_id',
+        'vehicle_type',
         'duration_type',
         'in_time',
         'out_time',
         'date',
         'amount',
-        'name',
         'serial_number',
+        'name',
         'company_id',
+        'pos_user_id',
+        'vehicle_id',
     ];
 
-      public function vehicle()
+    public function vehicle()
     {
         return $this->belongsTo(Vehicle::class, 'vehicle_id'); // foreign key
     }

@@ -58,10 +58,11 @@ Route::prefix('superadmin')->group(function () {
         Route::post('/add-vehicle', [farematrixController::class, 'addvehicle'])->name('superadmin.faremetrix.addvehicle');
         Route::get('/edit-vehicle/{id}', [farematrixController::class, 'editvehicle'])->name('superadmin.faremetrix.editvehicle');
         Route::put('/update-vehicle/{id}', [farematrixController::class, 'updatevehicle'])->name('superadmin.faremetrix.updatevehicle');
-
         Route::delete('/delete-vehicle/{id}', [farematrixController::class, 'deletevehicle'])->name('superadmin.faremetrix.deletevehicle');
         Route::post('/store-rate', [farematrixController::class, 'ratecreate'])->name('superadmin.faremetrix.ratecreate');
         Route::get('/add-slot', [farematrixController::class, 'addslot'])->name('superadmin.faremetrix.addslot');
+        Route::get('get-company-vehicles/{companyId}', [farematrixController::class, 'getVehicles'])
+            ->name('superadmin.getCompanyVehicles');
         Route::get('/edit/{id}', [farematrixController::class, 'edit'])->name('superadmin.faremetrix.edit');
         Route::post('/store-slot', [farematrixController::class, 'storeslot'])->name('superadmin.faremetrix.storeslot');
         Route::post('/vehicle/rate/update', [farematrixController::class, 'updateRate'])->name('update.vehicle.rate');
@@ -138,4 +139,9 @@ Route::prefix('user')->group(function () {
     Route::get('/total-revenue', [\App\Http\Controllers\User\DashboardController::class, 'getTotalRevenue'])->name('total.revenue');
     Route::get('/today-collection', [\App\Http\Controllers\User\DashboardController::class, 'todayUserCollections'])->name('reports.today.collection');
     Route::get('/logout', [\App\Http\Controllers\User\DashboardController::class, 'logout'])->name('user.logout');
+
+    Route::get('/reports', [\App\Http\Controllers\User\ReportController::class, 'index'])->name('user.reports');
+    Route::get('/vehicle-report', [\App\Http\Controllers\User\VehicleReportController::class, 'vehicleReport'])->name('user.vehicle.report');
+    Route::get('/user-report', [\App\Http\Controllers\User\UserReportController::class, 'userReport'])->name('user.user.report');
+    Route::get('/pass-report', [\App\Http\Controllers\User\PassReportController::class, 'passReport'])->name('user.pass.report');
 });

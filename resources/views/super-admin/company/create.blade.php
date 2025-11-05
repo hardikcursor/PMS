@@ -261,11 +261,15 @@
                                                         <div class="mb-3">
                                                             <label>Header {{ $i }}</label>
                                                             <input type="text" class="form-control"
-                                                                name="header{{ $i }}" placeholder="Enter Header"
+                                                                name="header{{ $i }}"
+                                                                placeholder="Enter Your Header"
                                                                 value="{{ old('header' . $i) }}" maxlength="24">
+
+                                                            <span class="text-muted">Maximum Length is 24 character</span>
                                                             @error('header' . $i)
                                                                 <small class="text-danger">{{ $message }}</small>
                                                             @enderror
+
                                                         </div>
                                                     </div>
 
@@ -274,7 +278,9 @@
                                                             <label>Footer {{ $i }}</label>
                                                             <input type="text" class="form-control"
                                                                 name="footer{{ $i }}"
-                                                                value="{{ old('footer' . $i) }}" maxlength="24">
+                                                                value="{{ old('footer' . $i) }}" maxlength="24"
+                                                                placeholder="Enter Your Footer">
+                                                            <span class="text-muted">Maximum Length is 24 character</span>
                                                             @error('footer' . $i)
                                                                 <small class="text-danger">{{ $message }}</small>
                                                             @enderror
@@ -303,14 +309,14 @@
                 bodyTag: "section",
                 transitionEffect: "slideLeft",
                 autoFocus: true,
-                enableAllSteps: true, 
+                enableAllSteps: true,
                 enablePagination: true,
                 titleTemplate: '<span class="number">#index#.</span> #title#',
                 onStepChanging: function(event, currentIndex, newIndex) {
-                    
+
                     let form = $("#companyForm");
 
-                  
+
                     if (currentIndex === 0) {
                         form.find(
                             'input[name="agency_name"], input[name="phone_no"], input[name="email"], input[name="password"], textarea[name="address"]'
@@ -333,7 +339,7 @@
                         });
                     }
 
-                   
+
                     return true;
                 },
                 onFinished: function(event, currentIndex) {
@@ -341,7 +347,7 @@
                 }
             });
 
-          
+
             function generateLicense() {
                 const input = document.getElementById("licenseKeyInput");
                 if (!input.value) {

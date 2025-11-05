@@ -14,7 +14,7 @@ class farematrixController extends Controller
 {
     $user = auth()->user();
 
-    // केवल लॉगिन company-admin का record लाओ
+    
     $faremetrix = Fare_metrix::with('vehicleCategory', 'company', 'slot')
         ->where('user_id', $user->id)
         ->get();

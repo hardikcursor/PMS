@@ -24,7 +24,7 @@ class farematrixController extends Controller
             ? $query->get()
             : $query->paginate(10);
 
-        $companyCategories = User::role('company-admin')->get();
+        $companyCategories = User::role(['company-admin', 'User'])->get();
         $slots             = Slot::all();
 
         return view('super-admin.fare-matrix.index', compact('faremetrix', 'companyCategories', 'slots', 'selectedCompany'));
@@ -32,19 +32,21 @@ class farematrixController extends Controller
 
     public function vehicleadd()
     {
-        $vehicles = Vehicle::all();
-        return view('super-admin.fare-matrix.addvehicle', compact('vehicles'));
+        $companyCategories = User::role(['company-admin', 'User'])->get();
+        $vehicles          = Vehicle::all();
+        return view('super-admin.fare-matrix.addvehicle', compact('vehicles', 'companyCategories'));
     }
 
     public function addvehicle(Request $request)
     {
         $request->validate([
+            'company_category' => 'required|exists:users,id',
             'vehicle_category' => [
                 'required',
                 'string',
                 'max:255',
                 function ($attribute, $value, $fail) {
-                  
+
                     if (! preg_match('/^[A-Z\s]+$/', $value)) {
                         $fail('The vehicle category must be in all capital letters.');
                     }
@@ -55,6 +57,7 @@ class farematrixController extends Controller
         ]);
 
         $vehicle               = new Vehicle();
+        $vehicle->company_id   = $request->company_category;
         $vehicle->vehicle_type = $request->vehicle_category;
         $vehicle->save();
 
@@ -66,7 +69,7 @@ class farematrixController extends Controller
     public function editvehicle($id)
     {
         $vehicle = Vehicle::findOrFail($id);
-        return response()->json($vehicle); 
+        return response()->json($vehicle);
     }
 
     public function updatevehicle(Request $request, $id)
@@ -93,12 +96,21 @@ class farematrixController extends Controller
 
     public function addslot()
     {
-        $vehicleCategories = Vehicle::all();
+        $vehicleCategories = collect();
         $slots             = Slot::all();
-        $selectedCompany   = null;
-        $companyCategories = User::role('company-admin')->get();
+        $companyCategories = User::role(['company-admin', 'User'])->get();
 
-        return view('super-admin.fare-matrix.addslot', compact('vehicleCategories', 'companyCategories', 'slots', 'selectedCompany'));
+        return view('super-admin.fare-matrix.addslot', compact(
+            'vehicleCategories',
+            'companyCategories',
+            'slots'
+        ));
+    }
+
+    public function getVehicles($companyId)
+    {
+        $vehicles = Vehicle::where('company_id', $companyId)->get();
+        return response()->json($vehicles);
     }
 
     public function ratecreate(Request $request)
@@ -111,19 +123,23 @@ class farematrixController extends Controller
         ]);
 
         $companyId = $request->company_category;
+        $skipped   = [];
 
         foreach ($request->vehicle_category as $vehicleIndex => $vehicleCategoryId) {
             foreach ($request->rate as $slotId => $rates) {
                 $rate = $rates[$vehicleIndex] ?? 0;
 
-               
                 $exists = Fare_metrix::where('user_id', $companyId)
                     ->where('vehicle_category_id', $vehicleCategoryId)
                     ->where('slot_id', $slotId)
                     ->exists();
 
                 if ($exists) {
-                    return redirect()->route('superadmin.faremetrix.index')->back()->with('error', "Data already exists for this company, vehicle and slot.");
+                    $skipped[] = [
+                        'vehicle_id' => $vehicleCategoryId,
+                        'slot_id'    => $slotId,
+                    ];
+                    continue;
                 }
 
                 Fare_metrix::create([
@@ -135,7 +151,13 @@ class farematrixController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Fare metrix created successfully.');
+        if (count($skipped) > 0) {
+            return redirect()->back()->with([
+                'warning' => count($skipped) . ' entries were skipped (already exist). Others saved successfully.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'All fare matrix records created successfully.');
     }
 
     public function updateRate(Request $request)

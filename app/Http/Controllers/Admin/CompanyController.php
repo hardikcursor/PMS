@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -83,7 +82,6 @@ class CompanyController extends Controller
         $user->position = "admin";
         $user->role     = $request->role;
 
-
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
             $filename = time() . '_' . $image->getClientOriginalName();
@@ -92,7 +90,6 @@ class CompanyController extends Controller
         }
 
         $user->save();
-
 
         if ($user->role === 'admin') {
             $user->assignRole('Company-admin');
@@ -147,7 +144,7 @@ class CompanyController extends Controller
 
     public function edit($id)
     {
-       
+
         $company = User::with(['license', 'header', 'footer', 'gstInfo', 'accountInfo'])->findOrFail($id);
 
         return view('super-admin.company.edit', compact('company'));
@@ -184,76 +181,77 @@ class CompanyController extends Controller
             'pan_no'           => 'nullable|string|max:50',
         ]);
 
-        $company                  = User::findOrFail($id);
-        $company->name            = $request->agency_name;
-        $company->address         = $request->address;
-        $company->phone_no        = $request->phone_no;
-        $company->fax             = $request->fax;
-        $company->email           = $request->email;
-        $company->android_version = $request->android_version;
-        $company->position        = 'admin';
-       
+        // ✅ Find company
+        $company = User::findOrFail($id);
+
+        // ✅ Update company base info
+        $company->update([
+            'name'            => $request->agency_name,
+            'address'         => $request->address,
+            'phone_no'        => $request->phone_no,
+            'fax'             => $request->fax,
+            'email'           => $request->email,
+            'android_version' => $request->android_version,
+            'position'        => 'admin',
+        ]);
+
+        // ✅ Handle logo upload
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
             $filename = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('admin/uploads/company/'), $filename);
-            $company->image = $filename;
+            $company->update(['image' => $filename]);
         }
 
-        $company->save();
-
-        // License info
+        // ✅ Update or create related info safely
         $company->license()->updateOrCreate(
             ['user_id' => $company->id],
             [
-                'license_key'      => $request->license_key ?? '',
-                'license_validity' => $request->license_validity ?? null,
+                'license_key'      => $request->license_key,
+                'license_validity' => $request->license_validity,
             ]
         );
 
-        // GST info
         $company->gstInfo()->updateOrCreate(
             ['user_id' => $company->id],
             [
-                'gst_number' => $request->gst_no ?? '',
+                'gst_number' => $request->gst_no,
                 'c_gst'      => $request->c_gst ?? 0,
                 's_gst'      => $request->s_gst ?? 0,
             ]
         );
 
-        // Account info
         $company->accountInfo()->updateOrCreate(
             ['user_id' => $company->id],
             [
-                'cin_number' => $request->cin_no ?? '',
-                'pan_number' => $request->pan_no ?? '',
+                'cin_number' => $request->cin_no,
+                'pan_number' => $request->pan_no,
             ]
         );
 
-        // Header info
         $company->header()->updateOrCreate(
             ['user_id' => $company->id],
             [
-                'header1' => $request->header1 ?? '',
-                'header2' => $request->header2 ?? '',
-                'header3' => $request->header3 ?? '',
-                'header4' => $request->header4 ?? '',
+                'header1' => $request->header1,
+                'header2' => $request->header2,
+                'header3' => $request->header3,
+                'header4' => $request->header4,
             ]
         );
 
-        // Footer info
         $company->footer()->updateOrCreate(
             ['user_id' => $company->id],
             [
-                'footer1' => $request->footer1 ?? '',
-                'footer2' => $request->footer2 ?? '',
-                'footer3' => $request->footer3 ?? '',
-                'footer4' => $request->footer4 ?? '',
+                'footer1' => $request->footer1,
+                'footer2' => $request->footer2,
+                'footer3' => $request->footer3,
+                'footer4' => $request->footer4,
             ]
         );
 
-        return redirect()->route('superadmin.company.manage')
-            ->with('success', 'Company updated successfully');
+        return redirect()
+            ->route('superadmin.company.manage')
+            ->with('success', '✅ Company updated successfully');
     }
 
     public function destroy($id)
@@ -280,13 +278,13 @@ class CompanyController extends Controller
 
     public function activate()
     {
-        $active = User::with('subscriptionprice')->role(['Company-admin','User'])->where('status', 1)->get();
+        $active = User::with('subscriptionprice')->role(['Company-admin', 'User'])->where('status', 1)->get();
         return view('super-admin.company.active', compact('active'));
     }
 
     public function inactive()
     {
-        $inactive = User::with('subscriptionprice')->role(['Company-admin','User'])->where('status', 0)->get();
+        $inactive = User::with('subscriptionprice')->role(['Company-admin', 'User'])->where('status', 0)->get();
         return view('super-admin.company.inactive', compact('inactive'));
     }
 }

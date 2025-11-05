@@ -1,146 +1,161 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <title>Login Page</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('admin_assets/images/favicon.ico') }}">
+    <title>Login | PayPark</title>
 
-    <!-- Bootstrap Css -->
-    <link href="{{ asset('admin_assets/css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet"
-        type="text/css" />
-    <!-- Icons Css -->
-    <link href="{{ asset('admin_assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="{{ asset('admin_assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            background: url('../admin_assets/images/paypark-bg.jpg') center/cover no-repeat fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+        .login-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            max-width: 420px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        .form-control {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .password-toggle {
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .password-toggle:hover {
+            color: #667eea;
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        .invalid-feedback {
+            display: block;
+        }
+    </style>
 </head>
-
 <body>
-    <div class="account-pages my-5 pt-sm-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6 col-xl-5">
-                    <div class="card overflow-hidden">
-                        <div class="bg-primary bg-soft">
-                            <div class="row">
-                                <div class="col-7">
-                                    <div class="text-primary p-4">
-                                        <h5 class="text-primary">Welcome Back !</h5>
-                                        <p>Sign in to continue to Company.</p>
-                                    </div>
-                                </div>
-                                <div class="col-5 align-self-end">
-                                    <img src="{{ asset('admin_assets/images/cursor_logo.png') }}" alt=""
-                                        class="img-fluid">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body pt-0">
-                            <div class="auth-logo">
-                                <a href="index-2.html" class="auth-logo-light">
-                                    <div class="avatar-md profile-user-wid mb-4">
-                                        <span class="avatar-title rounded-circle bg-light">
-                                            <img src="{{ asset('admin_assets/images/logo-light.svg') }}" alt=""
-                                                class="rounded-circle" height="34">
-                                        </span>
-                                    </div>
-                                </a>
 
-                                <a href="index-2.html" class="auth-logo-dark">
-                                    <div class="avatar-md profile-user-wid mb-4">
-                                        <span class="avatar-title rounded-circle bg-light">
-                                            <img src="{{ asset('admin_assets/images/logo.svg') }}" alt=""
-                                                class="rounded-circle" height="34">
-                                        </span>
-                                    </div>
-                                </a>
-                            </div>
-                            @if (Session::has('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ Session::get('error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-
-                            @else
-
-                            @endif
-                            <div class="p-2">
-                                <form class="form-horizontal" method="post" action="{{ route('dologin') }}">
-                                    @csrf
-
-                                    <div class="mb-3">
-                                        <label for="username" class="form-label">User Name</label>
-                                        <input type="text"
-                                            class="form-control @error('username') is-invalid @enderror"
-                                            id="username"
-                                            name="username"
-                                            value="{{ old('username') }}"
-                                            placeholder="Enter username">
-                                        @error('username')
-                                        <p class="text-danger">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Password</label>
-                                        <div class="input-group auth-pass-inputgroup">
-                                            <input type="password"
-                                                class="form-control @error('password') is-invalid @enderror"
-                                                id="password"
-                                                name="password"
-                                                placeholder="Enter password"
-                                                aria-label="Password"
-                                                aria-describedby="password-addon">
-                                            <button class="btn btn-light" type="button" id="password-addon">
-                                                <i class="mdi mdi-eye-outline"></i>
-                                            </button>
-                                        </div>
-                                        @error('password')
-                                        <p class="text-danger">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="remember-check">
-                                        <label class="form-check-label" for="remember-check">
-                                            Remember me
-                                        </label>
-                                    </div>
-
-                                    <div class="mt-3 d-grid">
-                                        <button class="btn btn-primary waves-effect waves-light" type="submit">Log In</button>
-                                    </div>
-
-                                    <div class="mt-4 text-center">
-                                        <a href="auth-recoverpw.html" class="text-muted">
-                                            <i class="mdi mdi-lock me-1"></i> Forgot your password?
-                                        </a>
-                                    </div>
-                                </form>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <h3 class="text-gradient">Welcome Back</h3>
+            <p class="text-muted">Sign in to continue</p>
         </div>
-        <!-- end account-pages -->
 
-        <!-- JAVASCRIPT -->
-        <script src="{{ asset('admin_assets/libs/jquery/jquery.min.js') }}"></script>
-        <script src="{{ asset('admin_assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('admin_assets/libs/metismenu/metisMenu.min.js') }}"></script>
-        <script src="{{ asset('admin_assets/libs/simplebar/simplebar.min.js') }}"></script>
-        <script src="{{ asset('admin_assets/libs/node-waves/waves.min.js') }}"></script>
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-        <!-- App js -->
-        <script src="{{ asset('admin_assets/js/app.js') }}"></script>
+        <form id="loginForm" method="POST" action="{{ route('dologin') }}" novalidate>
+            @csrf
+
+ 
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text"
+                        class="form-control @error('username') is-invalid @enderror"
+                        name="username"
+                        value="{{ old('username') }}"
+                        placeholder="Enter username">
+                </div>
+                @error('username')<div class="text-danger">{{ $message }}</div>@enderror
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password"
+                        class="form-control @error('password') is-invalid @enderror"
+                        name="password"
+                        id="password"
+                        placeholder="Enter password">
+                    <span class="input-group-text password-toggle" onclick="togglePassword()">
+                        <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                    </span>
+                </div>
+                @error('password')<div class="text-danger">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+                <a href="#" class="text-decoration-none small" style="color:#667eea;">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-login w-100">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Login
+            </button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function togglePassword() {
+            const field = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            } else {
+                field.type = 'password';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            }
+        }
+    </script>
 </body>
-
 </html>

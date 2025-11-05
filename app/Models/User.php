@@ -45,6 +45,9 @@ class User extends Authenticatable
             'password'          => 'hashed',
         ];
     }
+    protected $casts = [
+        'pos_machine_id' => 'array',
+    ];
 
     public function subscription()
     {
@@ -54,6 +57,11 @@ class User extends Authenticatable
     public function license()
     {
         return $this->hasOne(License::class, 'user_id', 'id');
+    }
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class, 'company_id'); // or 'user_id'
     }
 
     public function subscriptionprice()
