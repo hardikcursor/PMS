@@ -65,8 +65,8 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>Company Name</th>
                                     <th>Vehicle Category</th>
-                                    <th>Created At</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -74,8 +74,8 @@
                                 @forelse($vehicles as $index => $vehicle)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
+                                        <td>{{ $vehicle->company->name ?? 'N/A' }}</td>
                                         <td>{{ $vehicle->vehicle_type }}</td>
-                                        <td>{{ $vehicle->created_at->format('d-m-Y') }}</td>
                                         <td>
                                             <!-- Edit button triggers modal -->
                                             <button type="button" class="btn btn-link text-warning p-0 me-2"

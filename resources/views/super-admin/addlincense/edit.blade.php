@@ -85,7 +85,7 @@
                                 <div class="mb-3 row">
                                     <label class="col-sm-3 col-form-label">License Validity <span class="text-danger">*</span></label>
                                     <div class="col-sm-9">
-                                        <input type="date" name="license_validity" id="licenseValidity"
+                                        <input type="datetime-local" name="license_validity" id="licenseValidity"
                                             class="form-control @error('license_validity') is-invalid @enderror"
                                             value="{{ old('license_validity', $subscription->duration) }}"
                                             min="{{ \Carbon\Carbon::today()->toDateString() }}">

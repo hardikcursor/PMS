@@ -33,7 +33,7 @@ class farematrixController extends Controller
     public function vehicleadd()
     {
         $companyCategories = User::role(['company-admin', 'User'])->get();
-        $vehicles          = Vehicle::all();
+        $vehicles          = Vehicle::with('company')->get();
         return view('super-admin.fare-matrix.addvehicle', compact('vehicles', 'companyCategories'));
     }
 

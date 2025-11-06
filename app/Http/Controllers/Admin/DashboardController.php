@@ -65,7 +65,7 @@ class DashboardController extends Controller
     {
        
         $company = User::with('license', 'setsubscriptionprice')
-            ->role('Company-admin')
+            ->role(['Company-admin','User'])
             ->get();
 
         
@@ -79,8 +79,8 @@ class DashboardController extends Controller
             $monthKeys[] = $dt->format('Y-m');
         }
 
-       
-        $enabledCompanyRows = User::role('Company-admin')
+
+        $enabledCompanyRows = User::role(['Company-admin','User'])
             ->where('status', 1)
             ->where('created_at', '>=', $start)
             ->get()
