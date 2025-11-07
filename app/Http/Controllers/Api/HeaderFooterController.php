@@ -55,113 +55,58 @@ class HeaderFooterController extends Controller
         ]);
     }
 
-    // public function getAddress(Request $request)
-    // {
-    //     // Validate input
-    //     $request->validate([
-    //         'lat' => 'required|numeric',
-    //         'lng' => 'required|numeric',
-    //     ]);
-
-    //     $lat = $request->lat;
-    //     $lng = $request->lng;
-
-    //     $address = null;
-
-    //     $googleKey = env('GOOGLE_MAPS_API_KEY');
-    //     $googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$lat},{$lng}&key={$googleKey}&language=en&region=IN";
-
-    //     $response = Http::get($googleUrl);
-
-    //     if ($response->successful()) {
-    //         $data = $response->json();
-
-    //         if (! empty($data['results'][0]['formatted_address'])) {
-    //             $address = $data['results'][0]['formatted_address'];
-    //         }
-    //     }
-
-
-    //     if (! $address) {
-    //         $osm = Http::get("https://nominatim.openstreetmap.org/reverse", [
-    //             'lat'    => $lat,
-    //             'lon'    => $lng,
-    //             'format' => 'json',
-    //         ])->json();
-
-    //         $address = $osm['display_name'] ?? "Address not found";
-    //     }
-
-
-    //     $location = Location::create([
-    //         'lat'     => $lat,
-    //         'lng'     => $lng,
-    //         'address' => $address,
-    //     ]);
-
-    //     return response()->json([
-    //         'status'      => true,
-    //         'address'     => $address,
-    //         'location_id' => $location->id,
-    //     ]);
-    // }
-
- public function getAddress(Request $request)
-{
-    $request->validate([
-        'lat' => 'required|numeric',
-        'lng' => 'required|numeric',
-    ]);
-
-    $lat = $request->lat;
-    $lng = $request->lng;
-    $address = null;
-
-   
-    $googleKey = env('GOOGLE_MAPS_API_KEY');
-    if ($googleKey) {
-        $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json", [
-            'latlng' => "$lat,$lng",
-            'key' => $googleKey,
-            'language' => 'en',
-            'region' => 'IN'
+    public function getAddress(Request $request)
+    {
+        $request->validate([
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
         ]);
 
-        if ($response->successful()) {
-            $data = $response->json();
-            if (!empty($data['results'][0]['formatted_address'])) {
-                $address = $data['results'][0]['formatted_address'];
+        $lat     = $request->lat;
+        $lng     = $request->lng;
+        $address = null;
+
+        $googleKey = env('GOOGLE_MAPS_API_KEY');
+        if ($googleKey) {
+            $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json", [
+                'latlng'   => "$lat,$lng",
+                'key'      => $googleKey,
+                'language' => 'en',
+                'region'   => 'IN',
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (! empty($data['results'][0]['formatted_address'])) {
+                    $address = $data['results'][0]['formatted_address'];
+                }
             }
         }
+
+        if (! $address) {
+            $osm = Http::get("https://nominatim.openstreetmap.org/reverse", [
+                'lat'    => $lat,
+                'lon'    => $lng,
+                'format' => 'json',
+            ])->json();
+
+            $address = $osm['display_name'] ?? null;
+        }
+
+        if (! $address) {
+            $address = "Lat: $lat, Lng: $lng";
+        }
+
+        $location = Location::updateOrCreate(
+            ['lat' => $lat, 'lng' => $lng],
+            ['address' => $address]
+        );
+
+        return response()->json([
+            'status'      => true,
+            'address'     => $address,
+            'location_id' => $location->id,
+        ]);
     }
-
-    
-    if (!$address) {
-        $osm = Http::get("https://nominatim.openstreetmap.org/reverse", [
-            'lat' => $lat,
-            'lon' => $lng,
-            'format' => 'json'
-        ])->json();
-
-        $address = $osm['display_name'] ?? null;
-    }
-
-    
-    if (!$address) {
-        $address = "Lat: $lat, Lng: $lng";
-    }
-
-    
-    $location = Location::updateOrCreate(
-        ['lat' => $lat, 'lng' => $lng],
-        ['address' => $address]
-    );
-
-    return response()->json([
-        'status' => true,
-        'address' => $address,
-        'location_id' => $location->id
-    ]);
-}
 
 }

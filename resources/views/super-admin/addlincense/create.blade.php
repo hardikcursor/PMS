@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const licenseKey = selectedOption.getAttribute('data-license-key');
         let validity = selectedOption.getAttribute('data-validity');
 
-        // Set licence name
         subscriptionNameField.value = licenseKey || '';
 
      

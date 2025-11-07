@@ -20,13 +20,11 @@ class DashboardController extends Controller
         $todayStart = now()->startOfDay();
         $todayEnd   = now()->endOfDay();
 
-        // Vehicles Grouped by Type
         $vehiclesByType = Vehicle::where('company_id', $userId)
             ->select('id', 'vehicle_type')
             ->get()
             ->groupBy('vehicle_type');
 
-        // Initialize totals
         $totals = [
             'Cycle'        => 0,
             'Bike'         => 0,
@@ -34,7 +32,6 @@ class DashboardController extends Controller
             'Comm Vehicle' => 0,
         ];
 
-        // ✅ Cycle
         $cycleIds = $vehiclesByType['CYCLE']->pluck('id')->toArray() ?? [];
         if (! empty($cycleIds)) {
             $totals['Cycle'] = DB::table('reports')
@@ -44,7 +41,6 @@ class DashboardController extends Controller
                 ->sum('amount');
         }
 
-        // ✅ Bike & Scooter
         $bikeScooterIds = collect($vehiclesByType['BIKE'] ?? [])
             ->merge($vehiclesByType['SCOOTER'] ?? [])
             ->pluck('id')
@@ -58,7 +54,6 @@ class DashboardController extends Controller
                 ->sum('amount');
         }
 
-        // ✅ Four Wheeler / Car
         $fourIds = collect($vehiclesByType['Four Wheeler'] ?? [])
             ->merge($vehiclesByType['CAR'] ?? [])
             ->pluck('id')
@@ -72,7 +67,6 @@ class DashboardController extends Controller
                 ->sum('amount');
         }
 
-        // ✅ Commercial Vehicles (remaining)
         $knownIds               = array_merge($cycleIds, $bikeScooterIds, $fourIds);
         $totals['Comm Vehicle'] = DB::table('reports')
             ->where('company_id', $userId)
@@ -80,13 +74,11 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$todayStart, $todayEnd])
             ->sum('amount');
 
-        // ✅ Today's Total
         $todayTotal = DB::table('reports')
             ->where('company_id', $userId)
             ->whereBetween('created_at', [$todayStart, $todayEnd])
             ->sum('amount');
 
-        // ✅ Last 3 Days Summary
         $fromDate = now()->subDays(2)->startOfDay();
         $toDate   = now()->endOfDay();
 
@@ -104,7 +96,6 @@ class DashboardController extends Controller
             ->orderBy(DB::raw('DATE(created_at)'), 'desc')
             ->get();
 
-        // ✅ Last 7 Days Vehicle Counts
         $sevenDaysAgo         = now()->subDays(6)->startOfDay();
         $last7DaysCollections = DB::table('reports')
             ->select(
@@ -117,7 +108,6 @@ class DashboardController extends Controller
             ->orderBy(DB::raw('DATE(created_at)'), 'asc')
             ->pluck('total_vehicle', 'date');
 
-        // ✅ Last 7 Days Amount Chart
         $startDate = now()->subDays(6)->startOfDay();
         $endDate   = now()->endOfDay();
 
@@ -141,9 +131,6 @@ class DashboardController extends Controller
             $labels[]      = $date->format('d M');
             $amounts[]     = (float) ($collectionsByDay->firstWhere('date', $formattedDate)->total_amount ?? 0);
         }
-
-        // ✅ Month Wise Summary
-
         $monthWiseData = DB::table('reports')
             ->select(
                 DB::raw('DATE_FORMAT(created_at, "%b %Y") as month'),

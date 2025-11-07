@@ -8,35 +8,17 @@ use Illuminate\Http\Request;
 
 class AddDeviceController extends Controller
 {
-
     public function index()
     {
         $postmachine = PosMachine::with('company')->get();
         return view('super-admin.adddevices.index', compact('postmachine'));
     }
+
     public function create()
     {
         $company = User::role(['company-admin', 'User'])->get();
         return view('super-admin.adddevices.create', compact('company'));
     }
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'Cname'     => 'required|exists:users,id',
-    //         'Srnumber'  => 'required|numeric',
-    //         'AndroidId' => 'nullable|string|max:255',
-    //     ]);
-
-    //     $posUser                = new PosMachine();
-    //     $posUser->company_id    = $request->Cname;
-    //     $posUser->serial_number = $request->Srnumber;
-    //     $posUser->android_id    = $request->AndroidId;
-    //     $posUser->status        = 1; // Default to active
-    //     $posUser->save();
-
-    //     return redirect()->route('superadmin.adddevices.index')->with('success', 'POS Device added successfully.');
-    // }
 
     public function store(Request $request)
     {

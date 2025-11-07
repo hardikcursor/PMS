@@ -14,10 +14,8 @@ use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
-
     public function managecompany()
     {
-
         $expiredSubscriptions = Subscription::whereDate('duration', '<', now())->get();
 
         foreach ($expiredSubscriptions as $subscription) {
@@ -97,7 +95,6 @@ class CompanyController extends Controller
             $user->assignRole('User');
         }
 
-        // License
         $license                   = new License();
         $license->user_id          = $user->id;
         $license->license_key      = $request->license_key;
@@ -105,7 +102,6 @@ class CompanyController extends Controller
         $license->android_version  = $request->android_version;
         $license->save();
 
-        // Header
         $header          = new Header();
         $header->user_id = $user->id;
         $header->header1 = $request->header1;
@@ -114,7 +110,6 @@ class CompanyController extends Controller
         $header->header4 = $request->header4;
         $header->save();
 
-        // Footer
         $footer          = new Footer();
         $footer->user_id = $user->id;
         $footer->footer1 = $request->footer1;
@@ -123,7 +118,6 @@ class CompanyController extends Controller
         $footer->footer4 = $request->footer4;
         $footer->save();
 
-        // GST
         $gstInfo             = new GST_INFO();
         $gstInfo->user_id    = $user->id;
         $gstInfo->gst_number = $request->gst_no;
@@ -131,22 +125,18 @@ class CompanyController extends Controller
         $gstInfo->s_gst      = $request->s_gst;
         $gstInfo->save();
 
-        // Account Info
         $accountInfo             = new Account_info();
         $accountInfo->user_id    = $user->id;
         $accountInfo->cin_number = $request->cin_no;
         $accountInfo->pan_number = $request->pan_no;
         $accountInfo->save();
 
-        return redirect()->route('superadmin.dashboard')
-            ->with('success', 'Company created successfully');
+        return redirect()->route('superadmin.dashboard')->with('success', 'Company created successfully');
     }
 
     public function edit($id)
     {
-
         $company = User::with(['license', 'header', 'footer', 'gstInfo', 'accountInfo'])->findOrFail($id);
-
         return view('super-admin.company.edit', compact('company'));
     }
 
@@ -159,11 +149,9 @@ class CompanyController extends Controller
             'fax'              => 'nullable|string|max:20',
             'email'            => 'required|email|unique:users,email,' . $id,
             'logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
             'license_key'      => 'nullable|string|max:255',
             'license_validity' => 'nullable|date|after_or_equal:today',
             'android_version'  => 'nullable|string|max:50',
-
             'header1'          => 'nullable|string|max:15',
             'header2'          => 'nullable|string|max:15',
             'header3'          => 'nullable|string|max:15',
@@ -172,19 +160,14 @@ class CompanyController extends Controller
             'footer2'          => 'nullable|string|max:15',
             'footer3'          => 'nullable|string|max:15',
             'footer4'          => 'nullable|string|max:15',
-
             'gst_no'           => 'nullable|string|max:50',
             'c_gst'            => 'nullable|numeric|min:0',
             's_gst'            => 'nullable|numeric|min:0',
-
             'cin_no'           => 'nullable|string|max:50',
             'pan_no'           => 'nullable|string|max:50',
         ]);
 
-        // ✅ Find company
         $company = User::findOrFail($id);
-
-        // ✅ Update company base info
         $company->update([
             'name'            => $request->agency_name,
             'address'         => $request->address,
@@ -195,7 +178,6 @@ class CompanyController extends Controller
             'position'        => 'admin',
         ]);
 
-        // ✅ Handle logo upload
         if ($request->hasFile('logo')) {
             $image    = $request->file('logo');
             $filename = time() . '_' . $image->getClientOriginalName();
@@ -203,7 +185,6 @@ class CompanyController extends Controller
             $company->update(['image' => $filename]);
         }
 
-        // ✅ Update or create related info safely
         $company->license()->updateOrCreate(
             ['user_id' => $company->id],
             [
@@ -249,9 +230,7 @@ class CompanyController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('superadmin.company.manage')
-            ->with('success', '✅ Company updated successfully');
+        return redirect()->route('superadmin.company.manage')->with('success', 'Company updated successfully');
     }
 
     public function destroy($id)
@@ -259,20 +238,17 @@ class CompanyController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('superadmin.company.manage')
-            ->with('success', 'Company deleted successfully');
+        return redirect()->route('superadmin.company.manage')->with('success', 'Company deleted successfully');
     }
 
     public function changestatus(Request $request)
     {
         $user = User::find($request->id);
-
         if ($user) {
             $user->status = $request->val;
             $user->save();
             return response()->json(['success' => true]);
         }
-
         return response()->json(['success' => false], 404);
     }
 

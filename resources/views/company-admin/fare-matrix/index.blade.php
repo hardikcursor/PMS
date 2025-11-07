@@ -214,7 +214,6 @@
                         });
                 });
             });
-
             // Delete row
             document.querySelectorAll('.delete-row').forEach(btn => {
                 btn.addEventListener('click', function() {

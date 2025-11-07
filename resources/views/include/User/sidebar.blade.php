@@ -10,49 +10,82 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="nav-item dropdown w-100">
+                        <li
+                            class="nav-item dropdown w-100 
+    {{ request()->is('user/reports*') ||
+    request()->routeIs('user.vehicle.report') ||
+    request()->routeIs('user.user.report') ||
+    request()->routeIs('user.pass.report')
+        ? 'active show'
+        : '' }}">
+
                             <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-between px-3 py-2 
-        {{ request()->is('user/reports*') ? 'active' : '' }}"
-                                href="" id="reportsDropdown" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false" style="border-radius: 8px; font-weight: 600;">
+                            {{ request()->is('user/reports*') ||
+                            request()->routeIs('user.vehicle.report') ||
+                            request()->routeIs('user.user.report') ||
+                            request()->routeIs('user.pass.report')
+                                ? 'active'
+                                : '' }}"
+                                href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="{{ request()->is('user/reports*') ||
+                                request()->routeIs('user.vehicle.report') ||
+                                request()->routeIs('user.user.report') ||
+                                request()->routeIs('user.pass.report')
+                                    ? 'true'
+                                    : 'false' }}"
+                                style="border-radius: 8px; font-weight: 600;">
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-bag-check me-2 fs-5"></i>
                                     <span>Reports</span>
                                 </div>
                             </a>
 
-                            <ul class="dropdown-menu w-100 shadow border-0 mt-2" aria-labelledby="reportsDropdown"
-                                style="border-radius: 10px; overflow: hidden;">
+                            <ul class="dropdown-menu w-100 shadow border-0 mt-2 {{ request()->is('user/reports*') ||
+                            request()->routeIs('user.vehicle.report') ||
+                            request()->routeIs('user.user.report') ||
+                            request()->routeIs('user.pass.report')
+                                ? 'show'
+                                : '' }}"
+                                aria-labelledby="reportsDropdown" style="border-radius: 10px; overflow: hidden;">
+
                                 <li>
-                                    <a class="dropdown-item report-link d-flex align-items-center py-2"
-                                        data-type="daily" href="{{ route('user.reports') }}">
+                                    <a class="dropdown-item d-flex align-items-center py-2 
+                {{ request()->routeIs('user.reports') || request()->is('user/reports*') ? 'active' : '' }}"
+                                        href="{{ route('user.reports') }}">
                                         <i class="bi bi-calendar-day text-primary me-2 fs-5"></i>
                                         <span>Daily Report</span>
                                     </a>
                                 </li>
+
                                 <li>
-                                    <a class="dropdown-item report-link d-flex align-items-center py-2"
-                                        data-type="weekly" href="{{ route('user.vehicle.report') }}">
+                                    <a class="dropdown-item d-flex align-items-center py-2 
+                {{ request()->routeIs('user.vehicle.report') ? 'active' : '' }}"
+                                        href="{{ route('user.vehicle.report') }}">
                                         <i class="bi bi-calendar-week text-success me-2 fs-5"></i>
                                         <span>Vehicle Wise Report</span>
                                     </a>
                                 </li>
+
                                 <li>
-                                    <a class="dropdown-item report-link d-flex align-items-center py-2"
-                                        data-type="monthly" href="{{ route('user.user.report') }}">
+                                    <a class="dropdown-item d-flex align-items-center py-2 
+                {{ request()->routeIs('user.user.report') ? 'active' : '' }}"
+                                        href="{{ route('user.user.report') }}">
                                         <i class="bi bi-calendar3 text-warning me-2 fs-5"></i>
                                         <span>User Wise Report</span>
                                     </a>
                                 </li>
+
                                 <li>
-                                    <a class="dropdown-item report-link d-flex align-items-center py-2"
-                                        data-type="custom" href="{{ route('user.pass.report') }}">
+                                    <a class="dropdown-item d-flex align-items-center py-2 
+                {{ request()->routeIs('user.pass.report') ? 'active' : '' }}"
+                                        href="{{ route('user.pass.report') }}">
                                         <i class="bi bi-funnel text-danger me-2 fs-5"></i>
                                         <span>Pass Report</span>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+
 
 
 
@@ -69,8 +102,8 @@
             }
 
             .dropdown-menu .dropdown-item:hover {
-                background-color: #6366f1;
-                color: #fff !important;
+                background-color: #c4c5f1;
+                color: #3e40b4 !important;
             }
 
             .dropdown-menu .dropdown-item:hover i {

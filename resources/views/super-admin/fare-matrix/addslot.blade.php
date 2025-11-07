@@ -165,7 +165,7 @@
                 const rows = slotTableBody.querySelectorAll('.slot-row');
                 const lastRow = rows[rows.length - 1];
                 const selectedOption = select.options[select.selectedIndex];
-                const isLastOption = select.selectedIndex === select.options.length - 1; // 👈 check last option
+                const isLastOption = select.selectedIndex === select.options.length - 1; 
 
              
                 if (select.closest('tr') === lastRow && select.value !== '' && !isLastOption) {
