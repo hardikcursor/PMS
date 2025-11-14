@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Vehicle Report</title>
@@ -10,43 +11,53 @@
             padding: 20px;
             color: #000;
         }
+
         .header {
             text-align: center;
             border-bottom: 2px solid #007bff;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
+
         .header h2 {
             margin: 0;
             color: #007bff;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
         .report-details {
             margin-bottom: 15px;
             font-size: 13px;
         }
+
         .report-details p {
             margin: 3px 0;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #444;
             padding: 8px;
             text-align: center;
         }
+
         thead {
             background: #e3f2fd;
             font-weight: bold;
         }
+
         tfoot {
             background: #e8f5e9;
             font-weight: bold;
         }
+
         .footer {
             width: 100%;
             border-top: 1px solid #ccc;
@@ -55,12 +66,15 @@
             font-size: 12px;
             color: #555;
         }
+
         .footer-left {
             float: left;
         }
+
         .footer-right {
             float: right;
         }
+
         .clearfix::after {
             content: "";
             display: table;
@@ -68,6 +82,7 @@
         }
     </style>
 </head>
+
 <body>
     {{-- Header --}}
     <div class="header">
@@ -76,15 +91,13 @@
 
     {{-- Date Range --}}
     <div class="report-details">
-        <p><strong>From Date:</strong> 
+        <p><strong>From Date:</strong>
             {{ $from_date ? \Carbon\Carbon::parse($from_date)->format('d M Y') : 'N/A' }}
         </p>
-        <p><strong>To Date:</strong> 
+        <p><strong>To Date:</strong>
             {{ $to_date ? \Carbon\Carbon::parse($to_date)->format('d M Y') : 'N/A' }}
         </p>
     </div>
-
-    {{-- Data Table --}}
     <table>
         <thead>
             <tr>
@@ -132,4 +145,5 @@
         </div>
     </div>
 </body>
+
 </html>

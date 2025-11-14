@@ -24,14 +24,23 @@
                 </div>
             </div>
 
+            @php
+                $icons = [
+                    'CYCLE' => 'bi bi-bicycle',
+                    'BIKE' => 'bi bi-bicycle',
+                    'FOUR_WHEELER' => 'bi bi-car-front',
+                    'COMM_VEHICLE' => 'bi bi-truck',
+                ];
+            @endphp
+
             <div class="row g-4 mb-4">
-                @foreach (['Cycle', 'Bike', 'Four Wheeler', 'Comm Vehicle'] as $type)
+                @foreach (['CYCLE', 'BIKE', 'FOUR_WHEELER', 'COMM_VEHICLE'] as $type)
                     <div class="col-xl-3 col-lg-6">
                         <div class="card stats-card">
                             <div class="card-body d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     <div class="stats-icon bg-primary bg-opacity-10 text-primary">
-                                        <i class="bi bi-bar-chart"></i>
+                                        <i class="{{ $icons[$type] }}"></i>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1 ms-3">
@@ -44,6 +53,10 @@
                 @endforeach
             </div>
 
+
+
+
+
             <div class="row g-4 mb-4">
                 <div class="col-lg-8">
                     <div class="card">
@@ -51,7 +64,9 @@
                             <h5 class="card-title mb-0">Total Revenue (Last 7 Days)</h5>
                         </div>
                         <div class="card-body text-center">
-                            <canvas id="revenue7DaysChart" height="140"></canvas>
+                            <div style="position: relative; height:40vh; width:100%;">
+                                <canvas id="revenue7DaysChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
@@ -60,6 +75,7 @@
                         const ctx = document.getElementById('revenue7DaysChart').getContext('2d');
                         const labels = @json($labels);
                         const dataAmounts = @json($amounts);
+
                         new Chart(ctx, {
                             type: 'bar',
                             data: {
@@ -75,6 +91,7 @@
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: false, // ✅ important for full responsiveness
                                 plugins: {
                                     legend: {
                                         display: true
@@ -111,6 +128,7 @@
                         });
                     </script>
                 </div>
+
 
                 <div class="col-lg-4">
                     <div class="card bg-dark text-white">
@@ -168,13 +186,16 @@
             </div>
 
             <div class="row g-4 mb-4">
+
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Revenue Overview (Month-wise)</h5>
                         </div>
                         <div class="card-body">
-                            <canvas id="revenueChart2" height="150"></canvas>
+                            <div style="position: relative; height:45vh; width:100%;">
+                                <canvas id="revenueChart2"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -187,6 +208,7 @@
                         const rawMonthLabels = @json($monthLabels);
                         const monthAmounts = @json($monthAmounts);
                         const monthVehicles = @json($monthVehicles);
+
                         const monthMap = {
                             '01': 'Jan',
                             '1': 'Jan',
@@ -221,10 +243,12 @@
                             '12': 'Dec',
                             'December': 'Dec'
                         };
+
                         const monthLabels = rawMonthLabels.map(m => {
                             const month = m.split(" ")[0];
                             return monthMap[month] || month;
                         });
+
                         const revenueData = allMonths.map(m => {
                             const index = monthLabels.indexOf(m);
                             return index !== -1 ? monthAmounts[index] : 0;
@@ -233,6 +257,7 @@
                             const index = monthLabels.indexOf(m);
                             return index !== -1 ? monthVehicles[index] : 0;
                         });
+
                         new Chart(ctx, {
                             type: 'line',
                             data: {
@@ -261,6 +286,7 @@
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: false, // ✅ makes it responsive in any container
                                 plugins: {
                                     legend: {
                                         display: true,
@@ -290,7 +316,7 @@
                                     x: {
                                         title: {
                                             display: true,
-                                            text: 'Months (Jan-Dec)'
+                                            text: 'Months (Jan–Dec)'
                                         }
                                     }
                                 }
@@ -299,32 +325,35 @@
                     });
                 </script>
 
+                <!-- ✅ Last 7 Days Vehicle Doughnut Chart -->
                 <div class="col-lg-4">
-                    <div class="card" style="height: 370px">
+                    <div class="card" style="min-height: 370px;">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Total No of vehicles in last 7 days</h5>
+                            <h5 class="card-title mb-0">Total No of Vehicles (Last 7 Days)</h5>
                         </div>
                         <div class="card-body d-flex justify-content-center align-items-center">
-                            <div style="max-width:300px; max-height:300px;">
+                            <div style="position: relative; height:40vh; width:100%; max-width:300px; margin:auto;">
                                 <canvas id="vehicle7DaysChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
                         const rawData = @json($last7DaysCollections);
                         const canvas = document.getElementById('vehicle7DaysChart');
                         const container = canvas.parentElement;
+
                         if (!rawData || Object.keys(rawData).length === 0) {
                             container.innerHTML =
                                 '<p class="text-muted text-center mt-3">No data available for the last 7 days.</p>';
                             return;
                         }
+
                         const labels = Object.keys(rawData);
                         const data = Object.values(rawData);
+
                         const formattedLabels = labels.map(date => {
                             const d = new Date(date);
                             return d.toLocaleDateString('en-GB', {
@@ -332,6 +361,7 @@
                                 month: 'short'
                             });
                         });
+
                         const ctx = canvas.getContext('2d');
                         new Chart(ctx, {
                             type: 'doughnut',
@@ -355,6 +385,7 @@
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: false,
                                 cutout: '70%',
                                 plugins: {
                                     legend: {
@@ -365,9 +396,7 @@
                                     },
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
-                                                return context.label + ': ' + context.raw + ' vehicles';
-                                            }
+                                            label: context => context.label + ': ' + context.raw + ' vehicles'
                                         }
                                     }
                                 }
@@ -376,6 +405,7 @@
                     });
                 </script>
             </div>
+
 
 
             <div class="row g-4 mb-4">

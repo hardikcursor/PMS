@@ -23,7 +23,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/masterlogin', [AuthController::class, 'masterlogin']);
-Route::get('/vehicles', [VehicleController::class, 'show']);
+Route::post('/vehicles', [VehicleController::class, 'getVehiclesByUser']);
 Route::post('/fares', [FaremetrixController::class, 'getFareMatrix']);
 
 Route::post('/headersfooter', [HeaderFooterController::class, 'getHeaderFooter']);

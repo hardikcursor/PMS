@@ -138,6 +138,7 @@ Route::prefix('user')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'dashboard'])->name('user.dashboard');
     Route::get('/total-revenue', [\App\Http\Controllers\User\DashboardController::class, 'getTotalRevenue'])->name('total.revenue');
     Route::get('/today-collection', [\App\Http\Controllers\User\DashboardController::class, 'todayUserCollections'])->name('reports.today.collection');
+    Route::get('/vehicle.earnings.json', [\App\Http\Controllers\User\DashboardController::class, 'vehicleEarnings'])->name('vehicle.earnings.json');
     Route::get('/logout', [\App\Http\Controllers\User\DashboardController::class, 'logout'])->name('user.logout');
 
     Route::get('/reports', [\App\Http\Controllers\User\ReportController::class, 'index'])->name('user.reports');

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,28 +10,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
         }
+
+        /* ✅ Background image removed — gradient background added */
         body {
-            background: url('../admin_assets/images/paypark-bg.jpg') center/cover no-repeat fixed;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            position: relative;
         }
-        body::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 0;
-        }
+
         .login-card {
-            position: relative;
-            z-index: 1;
             background: rgba(255, 255, 255, 0.96);
             border-radius: 1rem;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
@@ -40,14 +35,17 @@
             backdrop-filter: blur(10px);
             transition: transform 0.3s ease;
         }
+
         .form-control {
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
         }
+
         .form-control:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
+
         .btn-login {
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
@@ -57,34 +55,48 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
+
         .btn-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
+
         .password-toggle {
             cursor: pointer;
             color: #6c757d;
         }
+
         .password-toggle:hover {
             color: #667eea;
         }
+
         .text-gradient {
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: bold;
         }
+
         .invalid-feedback {
             display: block;
         }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            FONT-SIZE: 20PX;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="login-card">
         <div class="text-center mb-4">
-            <h3 class="text-gradient">Welcome Back</h3>
-            <p class="text-muted">Sign in to continue</p>
+            <h3 class="text-gradient">Parking Management System</h3>
+            <p class="text-muted">Log in to continue</p>
         </div>
 
         @if (session('error'))
@@ -97,35 +109,31 @@
         <form id="loginForm" method="POST" action="{{ route('dologin') }}" novalidate>
             @csrf
 
- 
+            <!-- Username -->
             <div class="mb-3">
-                <label class="form-label">Username</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text"
-                        class="form-control @error('username') is-invalid @enderror"
-                        name="username"
-                        value="{{ old('username') }}"
-                        placeholder="Enter username">
+                    <input type="text" class="form-control @error('username') is-invalid @enderror" name="username"
+                        value="{{ old('username') }}" placeholder="Enter username">
                 </div>
-                @error('username')<div class="text-danger">{{ $message }}</div>@enderror
+                @error('username')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
             <!-- Password -->
             <div class="mb-3">
-                <label class="form-label">Password</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password"
-                        class="form-control @error('password') is-invalid @enderror"
-                        name="password"
-                        id="password"
-                        placeholder="Enter password">
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
+                        id="password" placeholder="Enter password">
                     <span class="input-group-text password-toggle" onclick="togglePassword()">
                         <i class="bi bi-eye-slash" id="toggleIcon"></i>
                     </span>
                 </div>
-                @error('password')<div class="text-danger">{{ $message }}</div>@enderror
+                @error('password')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -158,4 +166,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,3 +1,23 @@
+<!-- Sidebar toggle button -->
+<button id="sidebarToggle" class="btn btn-primary"
+    style="
+        position: fixed; 
+        top: 15px; 
+        left: 240px; 
+        z-index: 1100; 
+        border-radius: 4px; 
+        padding: 16px 20px; 
+        font-size: 18px;
+        width: 40px; 
+        height: 40px;
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+    ">
+    <i class="bi bi-list" style="font-size: 20px"></i>
+</button>
+
+
         <aside class="admin-sidebar" id="admin-sidebar">
             <div class="sidebar-content">
                 <nav class="sidebar-nav">
@@ -113,4 +133,20 @@
             .dropdown-menu {
                 min-width: 250px;
             }
+            /* Sidebar base */
+
+
+/* Sidebar hidden */
+.admin-sidebar.closed {
+    transform: translateX(-100%);
+}
+
+/* Main content area */
+
+
+/* When sidebar closed, main content full width */
+.admin-main.full-width {
+    margin-left: 0 !important;
+}
+
         </style>

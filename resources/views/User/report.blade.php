@@ -20,6 +20,8 @@
 
                         <div class="card-body">
                             <form method="GET" action="{{ route('user.reports') }}" class="row g-3 mb-3">
+                                <input type="hidden" name="submitted" value="1">
+
                                 <div class="col-md-3">
                                     <label for="from_date" class="form-label">From Date</label>
                                     <input type="date" name="from_date" id="from_date" class="form-control"
@@ -50,43 +52,77 @@
                                 </div>
                             </form>
 
+
                             <hr>
 
-                            <div class="table-responsive">
-                                @php
-                                    $grandQty = $reports->sum('qty');
-                                    $grandAmount = $reports->sum('total_amount');
-                                @endphp
+                            @php
+                                $isSubmitted = request()->has('submitted');
+                                $hasDateFilter = request()->filled('from_date') || request()->filled('to_date');
+                            @endphp
 
-                                <table class="table table-bordered table-striped text-center">
-                                    <thead class="table-primary">
-                                        <tr>
-                                            <th>SR NO</th>
-                                            <th>VEHICLE TYPE</th>
-                                            <th>QTY</th>
-                                            <th>AMOUNT</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($reports as $key => $report)
+                            @if ($isSubmitted && !$hasDateFilter)
+                                <div class="alert alert-warning text-center fw-bold">
+                                    Please select a date and click the Show button.
+                                </div>
+                            @endif
+
+
+                            @if ($hasDateFilter && $reports->isNotEmpty())
+                                <div class="table-responsive">
+                                    @php
+                                        $grandQty = 0;
+                                        $grandAmount = 0;
+                                    @endphp
+
+                                    <table class="table table-bordered table-striped text-center">
+                                        <thead class="table-primary">
                                             <tr>
-                                                <td>{{ ++$key }}</td>
-                                                <td>{{ $report['vehicle_type'] }}</td>
-                                                <td>{{ $report['qty'] }}</td>
-                                                <td>{{ number_format($report['total_amount'], 2) }}</td>
+                                                <th>SR NO</th>
+                                                <th>VEHICLE TYPE</th>
+                                                <th>QTY</th>
+                                                <th>AMOUNT</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                    <tfoot style="background:#e8f5e9; font-weight:bold;">
-                                        <tr>
-                                            <td colspan="2">Grand Total</td>
-                                            <td>{{ $grandQty }}</td>
-                                            <td>{{ number_format($grandAmount, 2) }}</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $grandQty = 0;
+                                                $grandAmount = 0;
+                                            @endphp
+
+                                            @foreach ($reports as $key => $report)
+                                                <tr>
+                                                    <td>{{ $key + 1 }}</td>
+                                                    <td>{{ $report['vehicle_type'] }}</td>
+                                                    <td>{{ $report['qty'] }}</td>
+                                                    <td>{{ number_format($report['total_amount'], 2) }}</td>
+                                                </tr>
+
+                                                @php
+                                                    $grandQty += $report['qty'];
+                                                    $grandAmount += $report['total_amount'];
+                                                @endphp
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot style="background:#e8f5e9; font-weight:bold;">
+                                            <tr>
+                                                <td colspan="2">Grand Total</td>
+                                                <td>{{ $grandQty }}</td>
+                                                <td>{{ number_format($grandAmount, 2) }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+
+
+
+                                </div>
+                            @elseif($hasDateFilter && $reports->isEmpty())
+                                <div class="alert alert-warning text-center fw-bold">
+                                    <i class="bi bi-exclamation-triangle"></i> No records found for the selected date range.
+                                </div>
+                            @endif
                         </div>
+
+
 
 
 

@@ -8,7 +8,6 @@ class Report extends Model
     protected $fillable = [
         'bill_no',
         'vehicle_no',
-        'vehicle_type',
         'duration_type',
         'in_time',
         'out_time',
@@ -23,6 +22,12 @@ class Report extends Model
 
     public function vehicle()
     {
-        return $this->belongsTo(Vehicle::class, 'vehicle_id'); // foreign key
+        return $this->belongsTo(Vehicle::class, 'vehicle_id');
     }
+
+    public function posUser()
+    {
+        return $this->belongsTo(User::class, 'pos_user_id');
+    }
+
 }

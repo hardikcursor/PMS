@@ -186,10 +186,15 @@ class AuthController extends Controller
             ->first();
 
         if ($posUser) {
+            $vehicles = DB::table('vehicles')
+                ->where('company_id', $machine->company_id)
+                ->select('id', 'vehicle_type')
+                ->get();
+
             return response()->json([
-                'status'  => true,
-                'message' => 'POS User face login successful.',
-                'user'    => [
+                'status'   => true,
+                'message'  => 'POS User face login successful.',
+                'user'     => [
                     'id'            => $posUser->id,
                     'name'          => $posUser->name,
                     'company_id'    => $machine->company_id,
@@ -198,9 +203,11 @@ class AuthController extends Controller
                     'password'      => $posUser->password,
                     'type'          => 'POS User',
                 ],
+                'vehicles' => $vehicles, 
             ], 200);
         }
 
+  
         $user = User::where('username', $request->username)->first();
 
         if (! $user) {
@@ -229,10 +236,17 @@ class AuthController extends Controller
             ->select('id', 'name', 'position', 'password')
             ->get();
 
+
+        $vehicles = DB::table('vehicles')
+            ->where('company_id', $machine->company_id)
+            ->select('id', 'vehicle_type')
+            ->get();
+
         return response()->json([
             'status'    => true,
             'message'   => 'Admin face login successful.',
             'pos_users' => $posUsers,
+            'vehicles'  => $vehicles,
         ], 200);
     }
 

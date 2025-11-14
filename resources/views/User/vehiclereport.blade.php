@@ -41,21 +41,22 @@
                                                 <td class="text-center">{{ $entries->count() }}</td>
                                                 <td class="text-center">₹{{ number_format($total, 2) }}</td>
                                                 <td class="text-center">
-                                                    <button class="btn btn-sm btn-outline-primary toggle-btn btn-effect-waves"
+                                                    <button
+                                                        class="btn btn-sm btn-outline-primary toggle-btn btn-effect-waves"
                                                         data-date="{{ Str::slug($date) }}">
                                                         <i class="bi bi-plus-circle"></i>
                                                     </button>
                                                 </td>
                                             </tr>
 
-                                      
                                             <tr class="detail-row d-none" id="details-{{ Str::slug($date) }}">
                                                 <td colspan="5">
                                                     <table class="table table-sm table-bordered mb-0">
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th class="text-center">Vehicle No</th>
-                                                                <th class="text-center">Vehicle Type</th>
+                                                                <th class="text-center">Vehicle Name</th>
+                                                                <!-- Changed from Vehicle Type -->
                                                                 <th class="text-center">Entry Time</th>
                                                                 <th class="text-center">Exit Time</th>
                                                                 <th class="text-center">Amount</th>
@@ -67,9 +68,11 @@
                                                                     <td class="text-center">{{ $entry->vehicle_no ?? '-' }}
                                                                     </td>
                                                                     <td class="text-center">{{ $entry->vehicle_type }}</td>
+                                                                    <!-- Use vehicle_name -->
                                                                     <td class="text-center">{{ $entry->in_time }}</td>
                                                                     <td class="text-center">{{ $entry->out_time }}</td>
-                                                                    <td class="text-center">₹{{ $entry->amount }}</td>
+                                                                    <td class="text-center">
+                                                                        ₹{{ number_format($entry->amount, 2) }}</td>
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
@@ -79,6 +82,42 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+
+                                <!-- Add simple JS for toggle details -->
+                                <script>
+                                    document.querySelectorAll('.toggle-btn').forEach(button => {
+                                        button.addEventListener('click', function() {
+                                            const dateSlug = this.getAttribute('data-date');
+                                            const detailsRow = document.getElementById('details-' + dateSlug);
+                                            if (detailsRow.classList.contains('d-none')) {
+                                                detailsRow.classList.remove('d-none');
+                                                this.querySelector('i').classList.replace('bi-plus-circle', 'bi-dash-circle');
+                                            } else {
+                                                detailsRow.classList.add('d-none');
+                                                this.querySelector('i').classList.replace('bi-dash-circle', 'bi-plus-circle');
+                                            }
+                                        });
+                                    });
+                                </script>
+
+
+                                <!-- Add simple JS for toggle details -->
+                                <script>
+                                    document.querySelectorAll('.toggle-btn').forEach(button => {
+                                        button.addEventListener('click', function() {
+                                            const dateSlug = this.getAttribute('data-date');
+                                            const detailsRow = document.getElementById('details-' + dateSlug);
+                                            if (detailsRow.classList.contains('d-none')) {
+                                                detailsRow.classList.remove('d-none');
+                                                this.querySelector('i').classList.replace('bi-plus-circle', 'bi-dash-circle');
+                                            } else {
+                                                detailsRow.classList.add('d-none');
+                                                this.querySelector('i').classList.replace('bi-dash-circle', 'bi-plus-circle');
+                                            }
+                                        });
+                                    });
+                                </script>
+
 
 
 
