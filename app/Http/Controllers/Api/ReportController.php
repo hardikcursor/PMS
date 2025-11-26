@@ -16,7 +16,6 @@ class ReportController extends Controller
         'bill_no'       => 'required|string|max:255',
         'vehicle_no'    => 'nullable|string|max:255',
         'vehicle_id'    => 'required|integer|exists:vehicles,id',
-
         'duration_type' => 'required|string|max:255',
         'in_time'       => 'required|date_format:H:i',
         'out_time'      => 'required|date_format:H:i',
@@ -54,7 +53,6 @@ class ReportController extends Controller
         ], 404);
     }
 
-    // ✅ Vehicle_type remove from fillable data
     $data = $request->only([
         'bill_no',
         'vehicle_no',
@@ -71,7 +69,7 @@ class ReportController extends Controller
     $data['company_id']  = $machine->company_id ?? null;
     $data['pos_user_id'] = $posUser->id ?? null;
 
-    // ✅ Now vehicle_type won't be stored
+  
     $entry = Report::create($data);
 
     return response()->json([

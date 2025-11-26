@@ -67,8 +67,7 @@ class AddDeviceController extends Controller
             'Srnumber'  => 'required|numeric',
             'AndroidId' => 'nullable|string|max:255',
         ]);
-
-
+        
         $posUser = PosMachine::findOrFail($id);
         $posUser->company_id    = $request->Cname;
         $posUser->serial_number = $request->Srnumber;

@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\VehicleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\QRApiController;
 
 
 
@@ -30,3 +30,5 @@ Route::post('/headersfooter', [HeaderFooterController::class, 'getHeaderFooter']
 Route::post('/get-address', [HeaderFooterController::class, 'getAddress']);
 Route::post('/report',[ReportController::class, 'store']);
 Route::get('/subscriptions',[SubscriptionController::class, 'subscriptions']);
+Route::post('/create-qr', [QRApiController::class, 'createQR']);     // App will call this
+Route::post('/razorpay/webhook', [QRApiController::class, 'webhook']);

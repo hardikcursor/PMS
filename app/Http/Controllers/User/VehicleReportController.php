@@ -10,11 +10,11 @@ class VehicleReportController extends Controller
     {
         $userId = auth()->user()->id;
 
-        $reports = Report::where('reports.company_id', $userId) // <-- reports.company_id સ્પષ્ટ કરો
+        $reports = Report::where('reports.company_id', $userId) 
             ->join('vehicles', 'reports.vehicle_id', '=', 'vehicles.id')
             ->select(
                 'reports.*',
-                'vehicles.vehicle_type' // તમારી જરૂરિયાત પ્રમાણે 'vehicle_type' કે 'vehicle_name' મુકશો
+                'vehicles.vehicle_type' 
             )
             ->orderBy('reports.created_at', 'desc')
             ->get()

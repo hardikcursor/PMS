@@ -34,16 +34,15 @@ class UserReportController extends Controller
                 $query->whereDate('reports.created_at', '=', $request->to_date);
             }
 
-            $report = $query->with('vehicle')
+            $report = $query
+                ->join('vehicles', 'reports.vehicle_id', '=', 'vehicles.id')
                 ->selectRaw('
-        reports.vehicle_id,
-        DATE(reports.created_at) as report_date,
-        pos_users.name as pos_user_name,
-        COUNT(reports.id) as vehicle_count,
-        SUM(reports.amount) as total_amount
-    ')
-                ->groupBy('reports.vehicle_id', 'report_date', 'pos_users.name')
-                ->orderBy('report_date', 'desc')
+                    vehicles.vehicle_type,
+                    COUNT(reports.id) as vehicle_count,
+                    SUM(reports.amount) as total_amount
+                ')
+                ->groupBy('vehicles.vehicle_type')
+                ->orderBy('vehicles.vehicle_type')
                 ->get();
 
         }

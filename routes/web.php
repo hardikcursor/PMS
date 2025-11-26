@@ -8,7 +8,15 @@ use App\Http\Controllers\Admin\LincenseController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\PosUserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\QRPaymentController;
 use Illuminate\Support\Facades\Route;
+
+
+
+
+
+
+
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -141,8 +149,10 @@ Route::prefix('user')->group(function () {
     Route::get('/vehicle.earnings.json', [\App\Http\Controllers\User\DashboardController::class, 'vehicleEarnings'])->name('vehicle.earnings.json');
     Route::get('/logout', [\App\Http\Controllers\User\DashboardController::class, 'logout'])->name('user.logout');
 
-    Route::get('/reports', [\App\Http\Controllers\User\ReportController::class, 'index'])->name('user.reports');
-    Route::get('/vehicle-report', [\App\Http\Controllers\User\VehicleReportController::class, 'vehicleReport'])->name('user.vehicle.report');
+    Route::get('/reports', [\App\Http\Controllers\User\ReportController::class, 'index'])->name('user.reports')->middleware('auth');
+    Route::get('/vehicle-report', [\App\Http\Controllers\User\VehicleReportController::class, 'vehicleReport'])->middleware('auth')->name('user.vehicle.report');
     Route::get('/user-report', [\App\Http\Controllers\User\UserReportController::class, 'userReport'])->name('user.user.report');
     Route::get('/pass-report', [\App\Http\Controllers\User\PassReportController::class, 'passReport'])->name('user.pass.report');
 });
+
+

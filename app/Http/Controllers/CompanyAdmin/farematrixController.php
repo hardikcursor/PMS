@@ -13,7 +13,6 @@ class farematrixController extends Controller
    public function index()
 {
     $user = auth()->user();
-
     
     $faremetrix = Fare_metrix::with('vehicleCategory', 'company', 'slot')
         ->where('user_id', $user->id)

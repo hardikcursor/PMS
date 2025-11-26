@@ -44,7 +44,7 @@
                                 <div class="col-md-3">
                                     <label for="pos_user_id" class="form-label">User Name</label>
                                     <select name="pos_user_id" id="pos_user_id" class="form-select">
-                                        <option value="">-- Select User --</option>
+                                        <option value="" selected>-- Select User --</option>
                                         @foreach ($posUsers as $user)
                                             <option value="{{ $user->id }}"
                                                 {{ request('pos_user_id') == $user->id ? 'selected' : '' }}>
@@ -105,7 +105,7 @@
                                             @foreach ($report as $key => $item)
                                                 <tr>
                                                     <td>{{ $key + 1 }}</td>
-                                                     <td>{{ $item->vehicle->vehicle_type ?? 'N/A' }}</td>
+                                                     <td>{{ $item->vehicle_type ?? 'N/A' }}</td>
                                                     <td>{{ $item->vehicle_count }}</td>
                                                     <td>{{ number_format($item->total_amount, 2) }}</td>
                                                 </tr>
