@@ -142,7 +142,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status'  => true,
-            'message' => 'Company Admin login successful.',
+            'message' => 'Admin login successful.',
             'user'    => [
                 'name'          => $user->name,
                 'email'         => $user->email,
